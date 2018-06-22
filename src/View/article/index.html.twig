@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Lista artykułów</h1>
+    <table class="table">
+        {% for article in articles  %}
+            <tr>
+                <td>
+                    {{ article.title }} - Autor: {{ article.user.name }}
+                </td>
+                <td>
+                    <a href="/article/show/id/{{ article.id }}">Czytaj</a>
+                    {% if user and (user.hasCredentials('admin') or user == article.user) %}
+                        <a href="/article/edit/id/{{ article.id }}" >
+                            Edytuj artykuł
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    {% if user and user.hasCredentials('user') %}
+        <a href="/article/create" class="btn btn-default">
+            Dodaj artykuł
+        </a>
+    {% endif %}
+
+
+
+{% endblock %}

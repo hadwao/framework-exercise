@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <form method="post">
+        <div class="form-group">
+            <label for="article_title">Tytuł</label>
+            <input type="text" class="form-control"
+                   name="article_title"
+                   placeholder="Tytuł artykułu"
+                   value="{{ article.title }}"
+                   required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="article_body">Treść artykułu</label>
+            <textarea class="form-control" name="article_body" required>{{ article.body }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-default">Zapisz artykuł</button>
+    </form>
+
+{% endblock %}
