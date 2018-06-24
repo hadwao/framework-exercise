@@ -70,7 +70,7 @@ abstract class AbstractController
         $loader = new \Twig_Loader_Filesystem(APP_ROOT_DIR .'/src/View');
         $options = [];
 
-        if (APP_DEV_MODE == false) {
+        if ($this->config->getParameter('dev_mode') == false) {
             $options['cache'] = APP_ROOT_DIR . '/var/cache/twig';
         }
 

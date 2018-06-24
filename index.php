@@ -1,6 +1,5 @@
 <?php
 require 'vendor/autoload.php';
-require 'app/config.php';
 define('APP_ROOT_DIR', __DIR__);
 
 //TODO: Gdzie to przenieść???

@@ -13,6 +13,7 @@ return [
         return new Core\AppConf($e->get('app'));
     },
 
+    //TODO: Czy to dobre rozwiązanie?
     'Entity\User' => function(\Core\Session $session, EntityManager $em) {
         if ($session->getParameter('user_id')){
             return $em->find(\Entity\User::class,$session->getParameter('user_id'));
@@ -23,7 +24,8 @@ return [
     },
 
     'Doctrine\ORM\EntityManager' => function(\DI\Container $e) {
-        $config = Setup::createAnnotationMetadataConfiguration(array(APP_ROOT_DIR .'/src/Entity'), APP_DEV_MODE);
+        $config = Setup::createAnnotationMetadataConfiguration(
+            array(APP_ROOT_DIR .'/src/Entity'), $e->get('app')['dev_mode']);
 
         $connectionParams = array(
             'dbname' => $e->get('db.name'),
