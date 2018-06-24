@@ -15,9 +15,19 @@ class Router
 {
     /**
      * @var HttpRequest
-     * @Inject
      */
     private $request;
+
+    /**
+     * @var AppConf
+     */
+    private $config;
+
+    public function __construct(HttpRequest $request, AppConf $config)
+    {
+        $this->request = $request;
+        $this->config = $config;
+    }
 
     /**
      * @return string
@@ -40,8 +50,9 @@ class Router
      */
     public function getControllerName(): string
     {
+
         $uriParts = $this->getUriParts();
-        return $uriParts[0] ?? APP_DEFAULT_CONTROLLER;
+        return $uriParts[0] ?? $this->config->getParameter('default_controller');
     }
 
 
@@ -51,7 +62,7 @@ class Router
     public function getActionName(): string
     {
         $uriParts = $this->getUriParts();
-        return $uriParts[1] ?? APP_DEFAULT_ACTION;
+        return $uriParts[1] ?? $this->config->getParameter('default_action');
     }
 
     /**

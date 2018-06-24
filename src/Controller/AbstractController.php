@@ -2,11 +2,10 @@
 namespace Controller;
 
 
-use Classes\Foo;
+use Core\AppConf;
 use Core\Request\HttpRequest;
 use Core\Router;
 use DI\Annotation\Inject;
-use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use Entity\User;
 
@@ -14,6 +13,7 @@ abstract class AbstractController
 {
     /**
      * @var EntityManager
+     * @Inject
      */
     protected $entityManager;
 
@@ -30,10 +30,10 @@ abstract class AbstractController
     protected $router;
 
     /**
-     * @var Foo
+     * @var AppConf
      * @Inject
      */
-    protected $foo;
+    protected $config;
 
     /**
      * @var User
@@ -42,42 +42,6 @@ abstract class AbstractController
 
 
 
-    /**
-     * AbstractController constructor.
-     * @param HttpRequest $request
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
-     */
-    public function __construct()
-    {
-        $this->configure();
-    }
-
-    public function configure()
-    {
-        $config = Setup::createAnnotationMetadataConfiguration(array(APP_ROOT_DIR .'/src/Entity'), APP_DEV_MODE);
-
-        $connectionParams = array(
-            'dbname' => APP_DB_NAME,
-            'user' => APP_DB_USER,
-            'password' => APP_DB_PASSWORD,
-            'host' => APP_DB_HOST,
-            'driver' => APP_DB_DRIVER,
-            'charset'  => 'utf8',
-            'driverOptions' => array(
-                1002 => 'SET NAMES utf8'
-            )
-        );
-
-        $this->entityManager = EntityManager::create($connectionParams, $config);
-
-        /*if ($this->request->getLoggedUserId()){
-            $this->user = $this
-                ->getEntityManager()
-                ->find(User::class, $this->request->getLoggedUserId());
-        }*/
-    }
 
     /**
      * @return HttpRequest

@@ -10,6 +10,8 @@ namespace Core;
 
 
 use Controller\ArticleController;
+use DI\Annotation\Inject;
+use DI\Container;
 
 class Dispatcher
 {
@@ -18,15 +20,26 @@ class Dispatcher
      */
     private $router;
 
-    public function __construct(Router $router)
+    /**
+     * @var Container
+     */
+    private $container;
+
+    public function __construct(Router $router, Container $container)
     {
         $this->router = $router;
+        $this->container = $container;
     }
 
     public function dispatch()
     {
         $controller = $this->router->getController();
         $action = $this->router->getAction();
+
+        $controller = $this->container->get($controller);
+
+        return $controller->$action();
+
 
 
     }

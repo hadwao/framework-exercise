@@ -1,5 +1,4 @@
 <?php
-define('APP_ROOT_DIR', __DIR__.'/..');
 define('APP_DEFAULT_CONTROLLER', 'article');
 define('APP_DEFAULT_ACTION', 'index');
 define('APP_DEV_MODE', true);
