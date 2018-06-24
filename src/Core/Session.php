@@ -41,14 +41,22 @@ class Session
 
     public function setFlash(string $name, $value)
     {
+        $this->preventFlashRemove($name);
         $_SESSION[$this->flashNamespace][$name] = $value;
+    }
+
+    private function preventFlashRemove(string $name)
+    {
+        if (($key = array_search($name, $this->flashesToRemove)) !== false) {
+            unset($this->flashesToRemove[$key]);
+        }
     }
 
     public function getFlashes()
     {
         $flashes = $_SESSION[$this->flashNamespace];
         foreach ($flashes as $key => $value) {
-            $this->setFalshToRemove($key);
+            $this->setFlashToRemove($key);
         }
 
         return $flashes;
@@ -56,8 +64,8 @@ class Session
 
     public function getFlash(string $name, $default = null)
     {
-        $this->setFalshToRemove($name);
-        return $_SESSION[$this->flashNamespace][$name] ?? null;
+        $this->setFlashToRemove($name);
+        return $_SESSION[$this->flashNamespace][$name] ?? $default;
     }
 
     public function hasFlash(string $name): bool
@@ -65,7 +73,7 @@ class Session
         return isset($_SESSION[$this->flashNamespace][$name]);
     }
 
-    private function setFalshToRemove($name)
+    private function setFlashToRemove($name)
     {
         if (!isset($this->flashesToRemove[$name])){
             $this->flashesToRemove[] = $name;
