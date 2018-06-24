@@ -52,77 +52,8 @@ class HttpRequest
         $this->session = $session;
     }
 
-    /**
-     * @return string
-     */
-    public function getControllerClass(): string
-    {
-        return 'Controller\\' . ucfirst($this->getControllerName()) . 'Controller';
-    }
-
-    /**
-     * @return string
-     */
-    public function getAction(): string
-    {
-        return $this->getActionName() . 'Action';
-    }
-
-    /**
-     * @return string
-     */
-    public function getControllerName(): string
-    {
-        $uriParts = $this->getUriParts();
-        return $uriParts[0] ?? APP_DEFAULT_CONTROLLER;
-    }
 
 
-    /**
-     * @return string
-     */
-    public function getActionName(): string
-    {
-        $uriParts = $this->getUriParts();
-        return $uriParts[1] ?? APP_DEFAULT_ACTION;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getUriParts(): array
-    {
-        $parts = explode('/', $this->server['REQUEST_URI']);
-        return array_values(array_filter($parts));
-    }
-
-    /**
-     * @return array
-     */
-    public function getParameters(): array
-    {
-        $parts = $this->getUriParts();
-
-        $parameters = [];
-
-        if (count($parts) > 2) {
-            for ($i=2; $i<count($parts); $i = $i+2) {
-                $parameters[$parts[$i]] = $parts[$i+1] ?? null;
-            }
-        }
-
-        return $parameters;
-    }
-
-    /**
-     * @param $name
-     * @param null $default
-     * @return string
-     */
-    public function getParameter($name, $default = null): string
-    {
-        return $this->getParameters()[$name] ?? $default;
-    }
 
     /**
      * @return string
@@ -178,5 +109,10 @@ class HttpRequest
     public function getBaseUrl(): string
     {
         return $this->server['REQUEST_SCHEME'] .'://'. $this->server['HTTP_HOST'];
+    }
+
+    public function getServerValue($value, $default = null)
+    {
+        return $this->server[$value] ?? null;
     }
 }

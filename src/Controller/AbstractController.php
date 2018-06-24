@@ -2,7 +2,10 @@
 namespace Controller;
 
 
+use Classes\Foo;
 use Core\Request\HttpRequest;
+use Core\Router;
+use DI\Annotation\Inject;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 use Entity\User;
@@ -16,13 +19,28 @@ abstract class AbstractController
 
     /**
      * @var HttpRequest
+     * @Inject
      */
     protected $request;
+
+    /**
+     * @var Router
+     * @Inject
+     */
+    protected $router;
+
+    /**
+     * @var Foo
+     * @Inject
+     */
+    protected $foo;
 
     /**
      * @var User
      */
     protected $user = null;
+
+
 
     /**
      * AbstractController constructor.
@@ -31,10 +49,13 @@ abstract class AbstractController
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\TransactionRequiredException
      */
-    public function __construct(HttpRequest $request)
+    public function __construct()
     {
-        $this->request = $request;
+        $this->configure();
+    }
 
+    public function configure()
+    {
         $config = Setup::createAnnotationMetadataConfiguration(array(APP_ROOT_DIR .'/src/Entity'), APP_DEV_MODE);
 
         $connectionParams = array(
@@ -51,12 +72,11 @@ abstract class AbstractController
 
         $this->entityManager = EntityManager::create($connectionParams, $config);
 
-        if ($this->request->getLoggedUserId()){
+        /*if ($this->request->getLoggedUserId()){
             $this->user = $this
                 ->getEntityManager()
                 ->find(User::class, $this->request->getLoggedUserId());
-        }
-
+        }*/
     }
 
     /**

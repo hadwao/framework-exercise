@@ -1,27 +1,17 @@
 <?php
-include 'vendor/autoload.php';
-include 'app/config.php';
-
-use Core\Request\HttpRequest;
-
+require 'vendor/autoload.php';
+require 'app/config.php';
 session_start();
 
-$request = new HttpRequest($_POST, $_GET, $_SERVER, $_SESSION);
+$builder = new \DI\ContainerBuilder();
+$builder->useAnnotations(true);
+$builder->addDefinitions('di-parameters.php');
+$builder->addDefinitions('di-factories.php');
+$container = $builder->build();
 
-$controllerClass = $request->getControllerClass();
-$action = $request->getAction();
+$frontController = $container->get('Core\\FrontController');
+$frontController->run();
 
-if (! class_exists($controllerClass)) {
-    http_response_code(404);
-    die();
-}
 
-$controller = new $controllerClass($request);
-if (!method_exists($controller, $action))
-{
-    http_response_code(404);
-    die();
-}
 
-echo $controller->$action();
 

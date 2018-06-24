@@ -6,6 +6,8 @@
   },
   "require": {
     "twig/twig": "^2.0",
-    "doctrine/orm": "2.6.*"
+    "doctrine/orm": "2.6.*",
+    "php-di/php-di": "^6.0",
+    "doctrine/annotations": "^1.6"
   }
 }
