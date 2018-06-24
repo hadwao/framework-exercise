@@ -10,7 +10,6 @@ namespace Controller;
 
 
 use Entity\Article;
-use Entity\User;
 
 class ArticleController extends AbstractController
 {
@@ -32,7 +31,7 @@ class ArticleController extends AbstractController
     {
         $article = $this
             ->entityManager
-            ->getRepository(Article::class)->find($this->getRequest()->getParameter('id'));
+            ->getRepository(Article::class)->find($this->getParameter('id'));
 
         if (!$article) {
             $this->redirect404();
@@ -66,6 +65,8 @@ class ArticleController extends AbstractController
             $this->entityManager->persist($article);
             $this->entityManager->flush();
 
+            $this->session->setFlash('success', 'Stworzyłeś nowy artykuł');
+
             $this->redirect('/article/index');
         }
 
@@ -83,8 +84,8 @@ class ArticleController extends AbstractController
         }
 
         $article = null;
-        if ($this->request->getParameter('id')) {
-            $article = $this->entityManager->find(Article::class, $this->request->getParameter('id'));
+        if ($this->getParameter('id')) {
+            $article = $this->entityManager->find(Article::class, $this->getParameter('id'));
         }
 
         if (!$article) {
@@ -109,6 +110,8 @@ class ArticleController extends AbstractController
                 ->setTitle($this->request->getPostValue('article_title'));
             $this->entityManager->persist($article);
             $this->entityManager->flush();
+
+            $this->session->setFlash('success', 'Zmiany w artykule zostały zapisane');
 
             $this->redirect('/article/index');
         }

@@ -13,6 +13,15 @@ return [
         return new Core\AppConf($e->get('app'));
     },
 
+    'Entity\User' => function(\Core\Session $session, EntityManager $em) {
+        if ($session->getParameter('user_id')){
+            return $em->find(\Entity\User::class,$session->getParameter('user_id'));
+        }
+        else {
+            return null;
+        }
+    },
+
     'Doctrine\ORM\EntityManager' => function(\DI\Container $e) {
         $config = Setup::createAnnotationMetadataConfiguration(array(APP_ROOT_DIR .'/src/Entity'), APP_DEV_MODE);
 
@@ -29,8 +38,6 @@ return [
         );
 
         return EntityManager::create($connectionParams, $config);
-
-
     }
 
 ];

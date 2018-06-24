@@ -43,6 +43,18 @@
 
 <div class="container">
 
+    {% if session.hasFlash('error') %}
+        <div class="alert alert-danger">
+            {{ session.getFlash('error') }}
+        </div>
+    {% endif %}
+
+    {% if session.hasFlash('success') %}
+        <div class="alert alert-success">
+            {{ session.getFlash('success') }}
+        </div>
+    {% endif %}
+
     {% block body %}
         Default body
     {% endblock %}

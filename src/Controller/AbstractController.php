@@ -5,6 +5,7 @@ namespace Controller;
 use Core\AppConf;
 use Core\Request\HttpRequest;
 use Core\Router;
+use Core\Session;
 use DI\Annotation\Inject;
 use Doctrine\ORM\EntityManager;
 use Entity\User;
@@ -24,6 +25,12 @@ abstract class AbstractController
     protected $request;
 
     /**
+     * @var Session
+     * @Inject
+     */
+    protected $session;
+
+    /**
      * @var Router
      * @Inject
      */
@@ -37,10 +44,9 @@ abstract class AbstractController
 
     /**
      * @var User
+     * @Inject
      */
-    protected $user = null;
-
-
+    protected $user;
 
 
     /**
@@ -73,7 +79,8 @@ abstract class AbstractController
         $template = $twig->load($template);
 
         $globalVars = [
-            'user' =>$this->user
+            'user' =>$this->user,
+            'session' => $this->session,
         ];
         return $template->render(array_merge($vars, $globalVars));
     }
@@ -119,6 +126,11 @@ abstract class AbstractController
     public function getUser()
     {
         return $this->getUser();
+    }
+
+    protected function getParameter($name, $default = null)
+    {
+        return $this->router->getParameter($name, $default);
     }
 
 

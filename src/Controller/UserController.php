@@ -13,7 +13,6 @@ use Entity\User;
 
 class UserController extends AbstractController
 {
-
     public function loginAction()
     {
         if ($this->getRequest()->getRequestMethod() == 'POST') {
@@ -26,14 +25,12 @@ class UserController extends AbstractController
                 ]);
 
             if ($user) {
-                $this->request->setLoggedUserId($user->getId());
+                $this->session->setParameter('user_id', $user->getId());
+                $this->session->setFlash('success', 'Zostałeś zalogowany');
                 $this->redirect('/article/index');
+            } else {
+                $this->session->setFlash('error', 'Podano błędny login lub hasło');
             }
-
-
-
-
-
         }
         return $this->renderView(
             'user/login.html.twig'
@@ -42,7 +39,7 @@ class UserController extends AbstractController
 
     public function logoutAction()
     {
-        $this->request->unsetLoggedUserId();
+        $this->session->unsetParameter('user_id');
         $this->redirect('/article/index');
     }
 
