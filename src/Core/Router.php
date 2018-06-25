@@ -28,25 +28,16 @@ class Router
         $this->config = $config;
     }
 
-    /**
-     * @return string
-     */
     public function getController(): string
     {
         return 'Controller\\' . ucfirst($this->getControllerName()) . 'Controller';
     }
 
-    /**
-     * @return string
-     */
     public function getAction(): string
     {
         return $this->getActionName() . 'Action';
     }
 
-    /**
-     * @return string
-     */
     public function getControllerName(): string
     {
 
@@ -55,27 +46,18 @@ class Router
     }
 
 
-    /**
-     * @return string
-     */
     public function getActionName(): string
     {
         $uriParts = $this->getUriParts();
         return $uriParts[1] ?? $this->config->getParameter('default_action');
     }
 
-    /**
-     * @return array
-     */
     protected function getUriParts(): array
     {
         $parts = explode('/', $this->request->getServerValue('REQUEST_URI'));
         return array_values(array_filter($parts));
     }
 
-    /**
-     * @return array
-     */
     public function getParameters(): array
     {
         $parts = $this->getUriParts();
@@ -91,11 +73,6 @@ class Router
         return $parameters;
     }
 
-    /**
-     * @param $name
-     * @param null $default
-     * @return string
-     */
     public function getParameter($name, $default = null): string
     {
         return $this->getParameters()[$name] ?? $default;

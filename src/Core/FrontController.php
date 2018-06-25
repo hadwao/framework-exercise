@@ -37,6 +37,9 @@ class FrontController
         $this->request = $request;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function run()
     {
         try {

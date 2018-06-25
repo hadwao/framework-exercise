@@ -8,10 +8,12 @@
 
 namespace Entity;
 
+use DI\Annotation\Injectable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @Entity @Table(name="user")
+ * @Injectable(lazy=true)
  **/
 class User
 {
@@ -115,7 +117,7 @@ class User
         return $this;
     }
 
-    public function hasCredentials($role)
+    public function hasCredentials($role): bool
     {
         return in_array($role, $this->roles);
     }

@@ -35,7 +35,7 @@ class Dispatcher
      * @throws ControllerNotExistsException
      * @throws \DI\DependencyException
      * @throws \DI\NotFoundException
-     * @throws \Exception
+     * @throws ActionNotExistsException
      */
     public function dispatch()
     {
