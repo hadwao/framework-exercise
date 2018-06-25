@@ -9,6 +9,7 @@
 namespace Core\Dispatcher;
 
 
+use Controller\ControllerFactory;
 use Core\Router;
 use DI\Container;
 
@@ -24,10 +25,10 @@ class Dispatcher
      */
     private $container;
 
-    public function __construct(Router $router, Container $container)
+    public function __construct(Router $router, ControllerFactory $controllerFactory)
     {
         $this->router = $router;
-        $this->container = $container;
+        $this->controllerFactory = $controllerFactory;
     }
 
     /**
@@ -42,12 +43,7 @@ class Dispatcher
         $controllerClass = $this->router->getController();
         $action = $this->router->getAction();
 
-        if (!class_exists($controllerClass))
-        {
-            throw new ControllerNotExistsException('Kontroler: '. $controllerClass .' nie istnieje');
-        }
-
-        $controller = $this->container->get($controllerClass);
+        $controller = $this->controllerFactory->createController($controllerClass);
 
         if (!method_exists($controller, $action)) {
             throw new ActionNotExistsException('Brak akcji:  '. $action .' w kontrolerze: '. $controllerClass);
