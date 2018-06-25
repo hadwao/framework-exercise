@@ -5,6 +5,7 @@ use Core\Dispatcher\Dispatcher;
 use Core\Dispatcher\PageNotFoundException;
 use Core\Exception\AccessForbiddenException;
 use Core\Request\HttpRequest;
+use DI\Annotation\Inject;
 use Entity\User;
 
 class FrontController
@@ -29,7 +30,17 @@ class FrontController
      */
     private $request;
 
-    public function __construct(HttpRequest $request, Dispatcher $dispatcher, AppConf $config, User $user = null)
+    /**
+     * FrontController constructor.
+     * @param HttpRequest $request
+     * @param Dispatcher $dispatcher
+     * @param AppConf $config
+     * @param User $user
+     *
+     * @Inject
+     *
+     */
+    public function __construct(HttpRequest $request, Dispatcher $dispatcher, AppConf $config, $user)
     {
         $this->dispatcher = $dispatcher;
         $this->config = $config;

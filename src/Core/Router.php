@@ -54,7 +54,12 @@ class Router
 
     private function stripGetParametersFromUri(string $uri): string
     {
-        return substr($uri,0, strpos($uri, '?'));
+        if ($strPos = strpos($uri, '?')) {
+            return substr($uri, 0, $strPos);
+        }
+        else {
+            return $uri;
+        }
     }
 
     private function getUriParts(): array
