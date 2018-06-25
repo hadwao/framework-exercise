@@ -34,7 +34,7 @@ class ArticleController extends AbstractController
             ->getRepository(Article::class)->find($this->getParameter('id'));
 
         if (!$article) {
-            $this->redirect404();
+            $this->frontController->forward404();
         }
 
         return $this->renderView(
@@ -78,10 +78,7 @@ class ArticleController extends AbstractController
 
     public function editAction()
     {
-        //uzytkownik musi byc zalogowany
-        if ((!$this->user) || (!$this->user->hasCredentials('user'))) {
-            return $this->redirect403();
-        }
+       $this->frontController->forward403IfNotSigned();
 
         $article = null;
         if ($this->getParameter('id')) {
@@ -89,18 +86,18 @@ class ArticleController extends AbstractController
         }
 
         if (!$article) {
-            $this->redirect404();
+            $this->frontController->forward404();
         }
 
         //tylko admin lub wlasciciel moze edytowac artykul
         if (!($this->user->hasCredentials('admin') || ($this->user === $article->getUser())))
         {
-            $this->redirect403();
+            $this->frontController->forward403();
         }
 
 
         if (!$article) {
-            return $this->redirect404();
+            return $this->frontController->forward404();
         }
 
         if ($this->request->getRequestMethod() == 'POST') {

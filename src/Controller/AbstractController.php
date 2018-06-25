@@ -3,6 +3,7 @@ namespace Controller;
 
 
 use Core\AppConf;
+use Core\FrontController;
 use Core\Request\HttpRequest;
 use Core\Router;
 use Core\Session;
@@ -47,6 +48,12 @@ abstract class AbstractController
      * @Inject
      */
     protected $user;
+
+    /**
+     * @var FrontController
+     * @Inject
+     */
+    protected $frontController;
 
 
     /**
@@ -96,31 +103,12 @@ abstract class AbstractController
     /**
      * @param $uri
      */
-    public function redirect($uri)
+    public function redirect(string $uri)
     {
-        header("Location: " . $this->request->getBaseUrl() . $uri);
-        die();
+        $this->frontController->redirect($uri);
     }
 
-    /**
-     * Redirect to 404 page
-     */
-    public function redirect404()
-    {
-        http_response_code(404);
-        die();
-    }
-
-    /**
-     * Redirect to forbiden page
-     */
-    public function redirect403()
-    {
-        http_response_code(403);
-        die();
-    }
-
-    /**
+        /**
      * @return User|null
      */
     public function getUser()

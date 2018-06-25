@@ -27,18 +27,12 @@ class HttpRequest
     protected $get = [];
 
     /**
+     * SERVER parameters
      * @var array
      */
     protected $server = [];
 
 
-
-    /**
-     * HttpRequest constructor.
-     * @param array $post
-     * @param array $get
-     * @param array $server
-     */
     public function __construct(array $post, array $get, array $server)
     {
         $this->post = $post;
@@ -47,28 +41,16 @@ class HttpRequest
     }
 
 
-    /**
-     * @return string
-     */
     public function getRequestMethod(): string
     {
         return $this->server['REQUEST_METHOD'];
     }
 
-    /**
-     * @param $name
-     * @param null $default
-     * @return mixed|null
-     */
     public function getPostValue($name, $default = null)
     {
         return $this->post[$name] ?? $default;
     }
 
-
-    /**
-     * @return string
-     */
     public function getBaseUrl(): string
     {
         return $this->server['REQUEST_SCHEME'] .'://'. $this->server['HTTP_HOST'];
@@ -76,6 +58,6 @@ class HttpRequest
 
     public function getServerValue($value, $default = null)
     {
-        return $this->server[$value] ?? null;
+        return $this->server[$value] ?? $default;
     }
 }
