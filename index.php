@@ -2,7 +2,7 @@
 require 'vendor/autoload.php';
 define('APP_ROOT_DIR', __DIR__);
 
-//TODO: Gdzie to przenieść???
+//TODO: Gdzie to przenieść??? Może di-facotries.php???
 session_start();
 
 $builder = new \DI\ContainerBuilder();

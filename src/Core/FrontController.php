@@ -5,7 +5,6 @@ use Core\Dispatcher\Dispatcher;
 use Core\Dispatcher\PageNotFoundException;
 use Core\Exception\AccessForbiddenException;
 use Core\Request\HttpRequest;
-use Doctrine\ORM\EntityManager;
 use Entity\User;
 
 class FrontController
@@ -29,7 +28,6 @@ class FrontController
      * @var HttpRequest
      */
     private $request;
-
 
     public function __construct(HttpRequest $request, Dispatcher $dispatcher, AppConf $config, User $user = null)
     {
@@ -71,10 +69,13 @@ class FrontController
 
     public function redirect(string $uri)
     {
-        header("Location: " . $this->request->getBaseUrl() . $uri);
+        header("Location: " . $this->getBaseUrl() . $uri);
         exit();
     }
 
+    /**
+     * @throws PageNotFoundException
+     */
     public function forward404()
     {
         http_response_code(404);
@@ -82,16 +83,29 @@ class FrontController
 
     }
 
+    /**
+     * @throws AccessForbiddenException
+     */
     public function forward403()
     {
         http_response_code(403);
         throw new AccessForbiddenException('Nie masz dostępu do tej strony');
     }
 
+    /**
+     * @throws AccessForbiddenException
+     */
     public function forward403IfNotSigned() {
         if ((!$this->user) || (!$this->user->hasCredentials('user'))) {
             $this->forward403();
         }
+    }
+
+    public function getBaseurl(): string
+    {
+        return $this->request->getServerValue('REQUEST_SCHEME')
+            .'://'.
+            $this->request->getServerValue('HTTP_HOST');
     }
 
 }

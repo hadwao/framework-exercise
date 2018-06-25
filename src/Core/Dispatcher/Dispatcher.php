@@ -10,7 +10,6 @@ namespace Core\Dispatcher;
 
 
 use Core\Router;
-use DI\Annotation\Inject;
 use DI\Container;
 
 class Dispatcher
@@ -51,7 +50,7 @@ class Dispatcher
         $controller = $this->container->get($controllerClass);
 
         if (!method_exists($controller, $action)) {
-            throw new \Exception('Brak akcji:  '. $action .' w kontrolerze: '. $controllerClass);
+            throw new ActionNotExistsException('Brak akcji:  '. $action .' w kontrolerze: '. $controllerClass);
         }
 
         return $controller->$action();

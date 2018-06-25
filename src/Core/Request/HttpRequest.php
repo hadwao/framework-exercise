@@ -51,11 +51,6 @@ class HttpRequest
         return $this->post[$name] ?? $default;
     }
 
-    public function getBaseUrl(): string
-    {
-        return $this->server['REQUEST_SCHEME'] .'://'. $this->server['HTTP_HOST'];
-    }
-
     public function getServerValue($value, $default = null)
     {
         return $this->server[$value] ?? $default;

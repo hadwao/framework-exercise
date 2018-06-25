@@ -9,7 +9,6 @@
 namespace Core;
 
 use Core\Request\HttpRequest;
-use DI\Annotation\Inject;
 
 class Router
 {

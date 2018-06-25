@@ -1,12 +1,10 @@
 <?php
-use Psr\Container\ContainerInterface;
-use function DI\factory;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 
 return [
     'Core\Request\HttpRequest' => function() {
-        return new Core\Request\HttpRequest($_POST, $_GET, $_SERVER, $_SESSION);
+        return new Core\Request\HttpRequest($_POST, $_GET, $_SERVER);
     },
 
     'Core\AppConf' => function(\DI\Container $e) {
