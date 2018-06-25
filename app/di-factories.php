@@ -21,6 +21,21 @@ return [
         }
     },
 
+    'Core\View\ViewInterface' => function(\Core\AppConf $config) {
+        $loader = new \Twig_Loader_Filesystem(APP_ROOT_DIR .'/src/View');
+        $options = [];
+
+        if ($config->getParameter('dev_mode') == false) {
+            $options['cache'] = APP_ROOT_DIR . '/var/cache/twig';
+        }
+
+        $twig = new \Twig_Environment($loader, $options);
+
+        return new \Core\View\TwigView($twig);
+    },
+
+
+
     'Doctrine\ORM\EntityManager' => function(\DI\Container $e) {
         $config = Setup::createAnnotationMetadataConfiguration(
             array(APP_ROOT_DIR .'/src/Entity'), $e->get('app')['dev_mode']);

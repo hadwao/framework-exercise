@@ -7,6 +7,7 @@ use Core\FrontController;
 use Core\Request\HttpRequest;
 use Core\Router;
 use Core\Session;
+use Core\View\ViewInterface;
 use DI\Annotation\Inject;
 use Doctrine\ORM\EntityManager;
 use Entity\User;
@@ -55,6 +56,12 @@ abstract class AbstractController
      */
     protected $frontController;
 
+    /**
+     * @var ViewInterface
+     * @Inject
+     */
+    protected $view;
+
 
     /**
      * @return HttpRequest
@@ -74,22 +81,11 @@ abstract class AbstractController
      */
     public function renderView($template, $vars = []): string
     {
-        $loader = new \Twig_Loader_Filesystem(APP_ROOT_DIR .'/src/View');
-        $options = [];
-
-        if ($this->config->getParameter('dev_mode') == false) {
-            $options['cache'] = APP_ROOT_DIR . '/var/cache/twig';
-        }
-
-        $twig = new \Twig_Environment($loader, $options);
-
-        $template = $twig->load($template);
-
         $globalVars = [
-            'user' =>$this->user,
+            'user' => $this->user,
             'session' => $this->session,
         ];
-        return $template->render(array_merge($vars, $globalVars));
+        return $this->view->renderView($template, array_merge($vars, $globalVars));
     }
 
     /**
@@ -106,14 +102,6 @@ abstract class AbstractController
     public function redirect(string $uri)
     {
         $this->frontController->redirect($uri);
-    }
-
-        /**
-     * @return User|null
-     */
-    public function getUser()
-    {
-        return $this->getUser();
     }
 
     protected function getParameter($name, $default = null)
