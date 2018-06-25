@@ -52,9 +52,16 @@ class Router
         return $uriParts[1] ?? $this->config->getParameter('default_action');
     }
 
-    protected function getUriParts(): array
+    private function stripGetParametersFromUri(string $uri): string
     {
-        $parts = explode('/', $this->request->getServerValue('REQUEST_URI'));
+        return substr($uri,0, strpos($uri, '?'));
+    }
+
+    private function getUriParts(): array
+    {
+        $parts = explode(
+            '/',
+            $this->stripGetParametersFromUri($this->request->getServerValue('REQUEST_URI')));
         return array_values(array_filter($parts));
     }
 
