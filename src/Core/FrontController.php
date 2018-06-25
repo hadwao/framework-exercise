@@ -75,6 +75,10 @@ class FrontController
         }
     }
 
+    /**
+     * @param \Exception $e
+     * @throws \Exception
+     */
     private function rethrowExceptionIfDevMode(\Exception $e) {
         if ($this->config->getParameter('dev_mode')) {
             throw $e;
@@ -84,7 +88,6 @@ class FrontController
     public function redirect(string $uri)
     {
         header("Location: " . $this->getBaseUrl() . $uri);
-        exit();
     }
 
     /**
