@@ -51,7 +51,6 @@ class ControllerFactory
         $controller = $this->container->get($controllerClass);
         $controller
             ->setFlash($this->container->get(MessageBoxInterface::class))
-            ->setUser($this->container->get(User::class))
             ->setConfig($this->container->get(AppConf::class))
             ->setEntityManager($this->container->get(EntityManager::class))
             ->setFrontController($this->container->get(FrontController::class))
@@ -60,6 +59,10 @@ class ControllerFactory
             ->setSession($this->container->get(SessionInterface::class))
             ->setView($this->container->get(ViewInterface::class))
         ;
+
+        if ($user = $this->container->get(User::class)) {
+            $controller->setUser($user);
+        }
 
         return $controller;
     }
