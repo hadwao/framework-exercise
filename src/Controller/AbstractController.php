@@ -6,11 +6,14 @@ use Core\AppConf;
 use Core\FrontController;
 use Core\Request\HttpRequest;
 use Core\Router;
-use Core\Session;
+use Core\Session\MessageBoxInterface;
+use Core\Session\SessionInterface;
 use Core\View\ViewInterface;
 use DI\Annotation\Inject;
 use Doctrine\ORM\EntityManager;
 use Entity\User;
+
+
 
 abstract class AbstractController
 {
@@ -27,7 +30,7 @@ abstract class AbstractController
     protected $request;
 
     /**
-     * @var Session
+     * @var SessionInterface
      * @Inject
      */
     protected $session;
@@ -62,6 +65,12 @@ abstract class AbstractController
      */
     protected $view;
 
+    /**
+     * @var MessageBoxInterface
+     * @Inject
+     */
+    protected $flash;
+
 
     /**
      * @return HttpRequest
@@ -84,6 +93,7 @@ abstract class AbstractController
         $globalVars = [
             'user' => $this->user,
             'session' => $this->session,
+            'flash' => $this->flash,
         ];
         return $this->view->renderView($template, array_merge($vars, $globalVars));
     }
@@ -101,7 +111,7 @@ abstract class AbstractController
      */
     public function redirect(string $uri)
     {
-        $this->frontController->redirect($uri);
+        return $this->frontController->redirect($uri);
     }
 
     protected function getParameter($name, $default = null)

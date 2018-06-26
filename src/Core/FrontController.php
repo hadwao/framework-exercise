@@ -88,6 +88,7 @@ class FrontController
     public function redirect(string $uri)
     {
         header("Location: " . $this->getBaseUrl() . $uri);
+        return null;
     }
 
     /**

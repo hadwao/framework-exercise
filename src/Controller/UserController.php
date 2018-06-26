@@ -13,6 +13,12 @@ use Entity\User;
 
 class UserController extends AbstractController
 {
+    /**
+     * @return string
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
     public function loginAction()
     {
         if ($this->getRequest()->getRequestMethod() == 'POST') {
@@ -26,10 +32,10 @@ class UserController extends AbstractController
 
             if ($user) {
                 $this->session->setParameter('user_id', $user->getId());
-                $this->session->setFlash('success', 'Zostałeś zalogowany');
-                $this->redirect('/article/index');
+                $this->flash->setFlash('success', 'You have signed up');
+                return $this->redirect('/article/index');
             } else {
-                $this->session->setFlash('error', 'Podano błędny login lub hasło');
+                $this->flash->setFlash('error', 'Incorrect user or password');
             }
         }
         return $this->renderView(
@@ -40,7 +46,8 @@ class UserController extends AbstractController
     public function logoutAction()
     {
         $this->session->unsetParameter('user_id');
-        $this->redirect('/article/index');
+        $this->flash->setFlash('success','You have been logged out');
+        return $this->redirect('/article/index');
     }
 
     public function createAction()

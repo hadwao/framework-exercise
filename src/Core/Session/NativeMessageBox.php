@@ -2,21 +2,25 @@
 /**
  * Created by PhpStorm.
  * User: hadwao
- * Date: 23.06.18
- * Time: 19:54
+ * Date: 26.06.18
+ * Time: 10:45
  */
 
-namespace Core;
+namespace Core\Session;
 
 
-class Session
+class NativeMessageBox implements MessageBoxInterface
 {
-
     private $flashNamespace = 'flash';
+
     private $flashesToRemove = [];
 
     public function __construct()
     {
+        if (session_status() != PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
     }
 
     public function __destruct()
@@ -25,18 +29,9 @@ class Session
             if (isset($_SESSION[$this->flashNamespace][$flashName]))
             {
                 unset($_SESSION[$this->flashNamespace][$flashName]);
+                die();
             }
         }
-    }
-
-    public function getParameter(string $name, $default = null)
-    {
-        return $_SESSION[$name] ?? $default;
-    }
-
-    public function setParameter(string $name, $value)
-    {
-        $_SESSION[$name] = $value;
     }
 
     public function setFlash(string $name, $value)
@@ -64,8 +59,10 @@ class Session
 
     public function getFlash(string $name, $default = null)
     {
+        $msg = $_SESSION[$this->flashNamespace][$name] ?? $default;
+
         $this->setFlashToRemove($name);
-        return $_SESSION[$this->flashNamespace][$name] ?? $default;
+        return $msg;
     }
 
     public function hasFlash(string $name): bool
@@ -79,13 +76,5 @@ class Session
             $this->flashesToRemove[] = $name;
         }
     }
-
-    public function unsetParameter($name)
-    {
-        if (isset($_SESSION[$name])) {
-            unset($_SESSION[$name]);
-        }
-    }
-
 
 }

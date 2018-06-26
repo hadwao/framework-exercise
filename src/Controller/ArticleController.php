@@ -14,6 +14,12 @@ use Entity\Article;
 class ArticleController extends AbstractController
 {
 
+    /**
+     * @return string
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
     public function indexAction()
     {
         $articles = $this->entityManager->getRepository(Article::class)->findAll();
@@ -27,6 +33,13 @@ class ArticleController extends AbstractController
         );
     }
 
+    /**
+     * @return string
+     * @throws \Core\Dispatcher\PageNotFoundException
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
     public function showAction()
     {
         $article = $this
@@ -48,11 +61,18 @@ class ArticleController extends AbstractController
 
     }
 
+    /**
+     * @return string
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     * @throws \Core\Exception\AccessForbiddenException
+     */
     public function createAction()
     {
-        if ((!$this->user) || (!$this->user->hasCredentials('user'))) {
-            return $this->redirect403();
-        }
+        $this->frontController->forward403IfNotSigned();
 
         $article = new Article();
         $article->setUser($this->user);
@@ -65,9 +85,9 @@ class ArticleController extends AbstractController
             $this->entityManager->persist($article);
             $this->entityManager->flush();
 
-            $this->session->setFlash('success', 'Stworzyłeś nowy artykuł');
+            $this->flash->setFlash('success', 'Stworzyłeś nowy artykuł');
 
-            $this->redirect('/article/index');
+            return $this->redirect('/article/index');
         }
 
         return $this->renderView(
@@ -76,6 +96,17 @@ class ArticleController extends AbstractController
         );
     }
 
+    /**
+     * @return string
+     * @throws \Core\Dispatcher\PageNotFoundException
+     * @throws \Core\Exception\AccessForbiddenException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
+     */
     public function editAction()
     {
        $this->frontController->forward403IfNotSigned();
@@ -89,16 +120,7 @@ class ArticleController extends AbstractController
             $this->frontController->forward404();
         }
 
-        //tylko admin lub wlasciciel moze edytowac artykul
-        if (!($this->user->hasCredentials('admin') || ($this->user === $article->getUser())))
-        {
-            $this->frontController->forward403();
-        }
-
-
-        if (!$article) {
-            return $this->frontController->forward404();
-        }
+        $this->forward403IfNotAllowedToEditArticle($article);
 
         if ($this->request->getRequestMethod() == 'POST') {
 
@@ -108,14 +130,25 @@ class ArticleController extends AbstractController
             $this->entityManager->persist($article);
             $this->entityManager->flush();
 
-            $this->session->setFlash('success', 'Zmiany w artykule zostały zapisane');
+            $this->flash->setFlash('success', 'Zmiany w artykule zostały zapisane');
 
-            $this->redirect('/article/index');
+            return $this->redirect('/article/index');
         }
 
         return $this->renderView(
             'article/create.html.twig',
             ['article' => $article]
         );
+    }
+
+    /**
+     * @param $article
+     * @throws \Core\Exception\AccessForbiddenException
+     */
+    private function forward403IfNotAllowedToEditArticle($article): void
+    {
+        if (!($this->user->hasCredentials('admin') || ($this->user === $article->getUser()))) {
+            $this->frontController->forward403();
+        }
     }
 }
