@@ -9,6 +9,7 @@
 namespace Core\User;
 
 
+use Core\Session\SessionInterface;
 use Doctrine\ORM\EntityManager;
 
 class User implements UserInterface
@@ -25,9 +26,9 @@ class User implements UserInterface
      */
     private $entityManager;
 
-    public function __construct(EntityManager $entityManager, $userId)
+    public function __construct(EntityManager $entityManager, SessionInterface $session)
     {
-        $this->id = $userId;
+        $this->id = $session->getParameter('user_id');
         $this->entityManager = $entityManager;
     }
 
