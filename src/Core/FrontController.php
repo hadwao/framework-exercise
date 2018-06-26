@@ -56,21 +56,14 @@ class FrontController
     {
         try {
             echo $this->dispatcher->dispatch();
-        }
-
-        catch (AccessForbiddenException $e)
+        } catch (AccessForbiddenException $e)
         {
             http_response_code(403);
             $this->rethrowExceptionIfDevMode($e);
-        }
-
-        catch (PageNotFoundException $e) {
+        } catch (PageNotFoundException $e) {
             http_response_code(404);
             $this->rethrowExceptionIfDevMode($e);
-        }
-
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             http_response_code(500);
             $this->rethrowExceptionIfDevMode($e);
         }
