@@ -75,7 +75,7 @@ class ArticleController extends AbstractController
         $this->frontController->forward403IfNotSigned();
 
         $article = new Article();
-        $article->setUser($this->user);
+        $article->setUser($this->user->getEntity());
 
         if ($this->request->getRequestMethod() == 'POST') {
 
@@ -147,7 +147,7 @@ class ArticleController extends AbstractController
      */
     private function forward403IfNotAllowedToEditArticle($article): void
     {
-        if (!($this->user->hasCredentials('admin') || ($this->user === $article->getUser()))) {
+        if (!($this->user->hasCredentials('admin') || ($this->user->getId() === $article->getUser()->getId()))) {
             $this->frontController->forward403();
         }
     }

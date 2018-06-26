@@ -8,10 +8,9 @@ use Core\Request\HttpRequest;
 use Core\Router;
 use Core\Session\MessageBoxInterface;
 use Core\Session\SessionInterface;
+use Core\User\UserInterface;
 use Core\View\ViewInterface;
-use DI\Annotation\Inject;
 use Doctrine\ORM\EntityManager;
-use Entity\User;
 
 
 
@@ -43,7 +42,7 @@ abstract class AbstractController
     protected $config;
 
     /**
-     * @var User
+     * @var UserInterface
      */
     protected $user;
 
@@ -161,10 +160,10 @@ abstract class AbstractController
     }
 
     /**
-     * @param User $user
+     * @param UserInterface $user
      * @return AbstractController
      */
-    public function setUser(User $user): AbstractController
+    public function setUser(UserInterface $user): AbstractController
     {
         $this->user = $user;
         return $this;

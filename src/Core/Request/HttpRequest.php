@@ -10,8 +10,6 @@ namespace Core\Request;
 
 
 
-use Entity\User;
-
 class HttpRequest
 {
     /**

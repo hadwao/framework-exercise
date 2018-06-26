@@ -10,7 +10,7 @@
                 </td>
                 <td>
                     <a href="/article/show/id/{{ article.id }}">Czytaj</a>
-                    {% if user and (user.hasCredentials('admin') or user == article.user) %}
+                    {% if user and (user.hasCredentials('admin') or user.getId == article.user.getId) %}
                         <a href="/article/edit/id/{{ article.id }}" >
                             Edytuj artykuł
                         </a>

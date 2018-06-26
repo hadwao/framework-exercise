@@ -5,8 +5,8 @@ use Core\Dispatcher\Dispatcher;
 use Core\Dispatcher\PageNotFoundException;
 use Core\Exception\AccessForbiddenException;
 use Core\Request\HttpRequest;
+use Core\User\UserInterface;
 use DI\Annotation\Inject;
-use Entity\User;
 
 class FrontController
 {
@@ -21,7 +21,7 @@ class FrontController
     private $config;
 
     /**
-     * @var User
+     * @var UserInterface
      */
     private $user;
 
@@ -35,7 +35,7 @@ class FrontController
      * @param HttpRequest $request
      * @param Dispatcher $dispatcher
      * @param AppConf $config
-     * @param User $user
+     * @param UserInterface $user
      *
      * @Inject
      *

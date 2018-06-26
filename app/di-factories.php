@@ -15,10 +15,9 @@ return [
         return new Core\AppConf($e->get('app'));
     },
 
-    //TODO: Czy to dobre rozwiązanie?
-    'Entity\User' => function(\Core\Session\SessionInterface $session, EntityManager $em) {
+    'Core\User\UserInterface' => function(\Core\Session\SessionInterface $session, EntityManager $em) {
         if ($session->getParameter('user_id')){
-            return $em->find(\Entity\User::class,$session->getParameter('user_id'));
+            return new \Core\User\User($em, $session->getParameter('user_id'));
         }
         else {
             return null;

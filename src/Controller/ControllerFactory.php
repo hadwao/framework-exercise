@@ -16,10 +16,10 @@ use Core\Request\HttpRequest;
 use Core\Router;
 use Core\Session\MessageBoxInterface;
 use Core\Session\SessionInterface;
+use Core\User\UserInterface;
 use Core\View\ViewInterface;
 use DI\Container;
 use Doctrine\ORM\EntityManager;
-use Entity\User;
 
 class ControllerFactory
 {
@@ -45,6 +45,7 @@ class ControllerFactory
         if (!class_exists($controllerClass)) {
             throw new ControllerNotExistsException('Controller: ' . $controllerClass .' doesn\'t exist');
         }
+
         /**
          * @var AbstractController $controller
          */
@@ -60,7 +61,7 @@ class ControllerFactory
             ->setView($this->container->get(ViewInterface::class))
         ;
 
-        if ($user = $this->container->get(User::class)) {
+        if ($user = $this->container->get(UserInterface::class)) {
             $controller->setUser($user);
         }
 
