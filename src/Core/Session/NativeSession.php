@@ -18,21 +18,45 @@ class NativeSession implements SessionInterface
         }
     }
 
-    public function getParameter(string $name, $default = null)
+    public function getParameter(string $name, $namespace = null, $default = null)
     {
-        return $_SESSION[$name] ?? $default;
+        if ($namespace) {
+            return $_SESSION[$namespace][$name] ?? $default;
+        } else {
+            return $_SESSION[$name] ?? $default;
+        }
     }
 
-    public function setParameter(string $name, $value)
+    public function setParameter(string $name, $value, $namespace = null)
     {
-        $_SESSION[$name] = $value;
+        if ($namespace){
+            $_SESSION[$namespace][$name] = $value;
+        }
+        else {
+            $_SESSION[$name] = $value;
+        }
+    }
+
+    public function hasParameter($name, $namespace):bool {
+        if ($namespace) {
+            return isset($_SESSION[$namespace][$name]);
+        } else {
+            return isset($_SESSION[$name]);
+        }
     }
 
 
-    public function unsetParameter($name)
+    public function unsetParameter($name, $namespace = null)
     {
-        if (isset($_SESSION[$name])) {
-            unset($_SESSION[$name]);
+        if ($namespace) {
+            if (isset($_SESSION[$namespace][$name])) {
+                unset($_SESSION[$namespace][$name]);
+            }
+        }
+        else {
+            if (isset($_SESSION[$name])) {
+                unset($_SESSION[$name]);
+            }
         }
     }
 }

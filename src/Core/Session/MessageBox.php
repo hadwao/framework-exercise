@@ -9,18 +9,20 @@
 namespace Core\Session;
 
 
-class NativeMessageBox implements MessageBoxInterface
+class MessageBox implements MessageBoxInterface
 {
     private $flashNamespace = 'flash';
 
     private $flashesToRemove = [];
 
-    public function __construct()
-    {
-        if (session_status() != PHP_SESSION_ACTIVE) {
-            session_start();
-        }
+    /**
+     * @var SessionInterface
+     */
+    private $session;
 
+    public function __construct(SessionInterface $session)
+    {
+        $this->session = $session;
     }
 
     public function __destruct()
@@ -37,7 +39,7 @@ class NativeMessageBox implements MessageBoxInterface
     public function setFlash(string $name, $value)
     {
         $this->preventFlashRemove($name);
-        $_SESSION[$this->flashNamespace][$name] = $value;
+        $this->session->setParameter($name,$value, $this->flashNamespace);
     }
 
     private function preventFlashRemove(string $name)
@@ -49,25 +51,23 @@ class NativeMessageBox implements MessageBoxInterface
 
     public function getFlashes()
     {
-        $flashes = $_SESSION[$this->flashNamespace];
+        $flashes = $this->session->getParameter($this->flashNamespace);
         foreach ($flashes as $key => $value) {
             $this->setFlashToRemove($key);
         }
-
         return $flashes;
     }
 
     public function getFlash(string $name, $default = null)
     {
-        $msg = $_SESSION[$this->flashNamespace][$name] ?? $default;
-
         $this->setFlashToRemove($name);
-        return $msg;
+        return $this->session->getParameter($name, $this->flashNamespace, $default);
+
     }
 
     public function hasFlash(string $name): bool
     {
-        return isset($_SESSION[$this->flashNamespace][$name]);
+        return $this->session->hasParameter($name, $this->flashNamespace);
     }
 
     private function setFlashToRemove($name)
