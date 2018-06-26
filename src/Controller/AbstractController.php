@@ -19,55 +19,46 @@ abstract class AbstractController
 {
     /**
      * @var EntityManager
-     * @Inject
      */
     protected $entityManager;
 
     /**
      * @var HttpRequest
-     * @Inject
      */
     protected $request;
 
     /**
      * @var SessionInterface
-     * @Inject
      */
     protected $session;
 
     /**
      * @var Router
-     * @Inject
      */
     protected $router;
 
     /**
      * @var AppConf
-     * @Inject
      */
     protected $config;
 
     /**
      * @var User
-     * @Inject
      */
     protected $user;
 
     /**
      * @var FrontController
-     * @Inject
      */
     protected $frontController;
 
     /**
      * @var ViewInterface
-     * @Inject
      */
     protected $view;
 
     /**
      * @var MessageBoxInterface
-     * @Inject
      */
     protected $flash;
 
@@ -118,6 +109,98 @@ abstract class AbstractController
     {
         return $this->router->getParameter($name, $default);
     }
+
+    /**
+     * @param EntityManager $entityManager
+     * @return AbstractController
+     */
+    public function setEntityManager(EntityManager $entityManager): AbstractController
+    {
+        $this->entityManager = $entityManager;
+        return $this;
+    }
+
+    /**
+     * @param HttpRequest $request
+     * @return AbstractController
+     */
+    public function setRequest(HttpRequest $request): AbstractController
+    {
+        $this->request = $request;
+        return $this;
+    }
+
+    /**
+     * @param SessionInterface $session
+     * @return AbstractController
+     */
+    public function setSession(SessionInterface $session): AbstractController
+    {
+        $this->session = $session;
+        return $this;
+    }
+
+    /**
+     * @param Router $router
+     * @return AbstractController
+     */
+    public function setRouter(Router $router): AbstractController
+    {
+        $this->router = $router;
+        return $this;
+    }
+
+    /**
+     * @param AppConf $config
+     * @return AbstractController
+     */
+    public function setConfig(AppConf $config): AbstractController
+    {
+        $this->config = $config;
+        return $this;
+    }
+
+    /**
+     * @param User $user
+     * @return AbstractController
+     */
+    public function setUser(User $user): AbstractController
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    /**
+     * @param FrontController $frontController
+     * @return AbstractController
+     */
+    public function setFrontController(FrontController $frontController): AbstractController
+    {
+        $this->frontController = $frontController;
+        return $this;
+    }
+
+    /**
+     * @param ViewInterface $view
+     * @return AbstractController
+     */
+    public function setView(ViewInterface $view): AbstractController
+    {
+        $this->view = $view;
+        return $this;
+    }
+
+    /**
+     * @param MessageBoxInterface $flash
+     * @return AbstractController
+     */
+    public function setFlash(MessageBoxInterface $flash): AbstractController
+    {
+        $this->flash = $flash;
+        return $this;
+    }
+
+
 
 
 }
