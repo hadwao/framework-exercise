@@ -6,6 +6,8 @@ use Core\Dispatcher\Dispatcher;
 use Core\Dispatcher\PageNotFoundException;
 use Core\Exception\AccessForbiddenException;
 use Core\Request\HttpRequest;
+use Core\Response\HttpResponse;
+use Core\Response\ResponseInterface;
 use Core\User\UserInterface;
 use DI\Annotation\Inject;
 
@@ -55,13 +57,18 @@ class FrontController
     public function run()
     {
         try {
-            echo $this->dispatcher->dispatch();
+            $response = $this->dispatcher->dispatch();
+
+            if (! $response instanceof ResponseInterface) {
+                throw new \Exception('Controller must return Response object');
+            }
+
+            $response->process();
+
         } catch (AccessForbiddenException $e)
         {
-            http_response_code(403);
             $this->rethrowExceptionIfDevMode($e);
         } catch (PageNotFoundException $e) {
-            http_response_code(404);
             $this->rethrowExceptionIfDevMode($e);
         } catch (\Exception $e) {
             http_response_code(500);
@@ -79,10 +86,10 @@ class FrontController
         }
     }
 
-    public function redirect(string $uri)
+    public function redirect(string $uri): ResponseInterface
     {
-        header("Location: " . $this->getBaseUrl() . $uri);
-        return null;
+        $response = new HttpResponse();
+        return $response->setRedirectUrl($this->getBaseurl() . $uri);
     }
 
     /**
@@ -90,8 +97,8 @@ class FrontController
      */
     public function forward404()
     {
-        http_response_code(404);
-        throw new PageNotFoundException('Strona nie została znaleziona');
+        $response = new HttpResponse();
+        return $response->setResponseCode(404);
 
     }
 
@@ -100,17 +107,8 @@ class FrontController
      */
     public function forward403()
     {
-        http_response_code(403);
-        throw new AccessForbiddenException('Nie masz dostępu do tej strony');
-    }
-
-    /**
-     * @throws AccessForbiddenException
-     */
-    public function forward403IfNotSigned() {
-        if ((!$this->user) || (!$this->user->hasCredentials('user'))) {
-            $this->forward403();
-        }
+        $response = new HttpResponse();
+        return $response->setResponseCode(403);
     }
 
     public function getBaseurl(): string

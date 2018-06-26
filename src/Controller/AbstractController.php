@@ -5,6 +5,8 @@ namespace Controller;
 use Core\Config\ConfigInterface;
 use Core\FrontController;
 use Core\Request\HttpRequest;
+use Core\Response\HttpResponse;
+use Core\Response\ResponseInterface;
 use Core\Router;
 use Core\Session\MessageBoxInterface;
 use Core\Session\SessionInterface;
@@ -73,19 +75,20 @@ abstract class AbstractController
     /**
      * @param $template
      * @param array $vars
-     * @return string
+     * @return ResponseInterface
      * @throws \Twig_Error_Loader
      * @throws \Twig_Error_Runtime
      * @throws \Twig_Error_Syntax
      */
-    public function renderView($template, $vars = []): string
+    public function renderView($template, $vars = []): ResponseInterface
     {
         $globalVars = [
             'user' => $this->user,
             'session' => $this->session,
             'flash' => $this->flash,
         ];
-        return $this->view->renderView($template, array_merge($vars, $globalVars));
+        $response = new HttpResponse();
+        return $response->setBody($this->view->renderView($template, array_merge($vars, $globalVars)));
     }
 
     /**
@@ -197,6 +200,15 @@ abstract class AbstractController
     {
         $this->flash = $flash;
         return $this;
+    }
+
+
+    public function isUserSigned():bool {
+        if ((!$this->user) || (!$this->user->hasCredentials('user'))) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 

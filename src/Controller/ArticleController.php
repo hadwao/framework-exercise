@@ -47,7 +47,7 @@ class ArticleController extends AbstractController
             ->getRepository(Article::class)->find($this->getParameter('id'));
 
         if (!$article) {
-            $this->frontController->forward404();
+            return $this->frontController->forward404();
         }
 
         return $this->renderView(
@@ -72,7 +72,9 @@ class ArticleController extends AbstractController
      */
     public function createAction()
     {
-        $this->frontController->forward403IfNotSigned();
+        if ($this->isUserSigned()) {
+            return $this->frontController->forward403();
+        }
 
         $article = new Article();
         $article->setUser($this->user->getEntity());
@@ -109,18 +111,18 @@ class ArticleController extends AbstractController
      */
     public function editAction()
     {
-       $this->frontController->forward403IfNotSigned();
-
         $article = null;
         if ($this->getParameter('id')) {
             $article = $this->entityManager->find(Article::class, $this->getParameter('id'));
         }
 
         if (!$article) {
-            $this->frontController->forward404();
+            return $this->frontController->forward404();
         }
 
-        $this->forward403IfNotAllowedToEditArticle($article);
+        if (!$this->isUserAllowedToEditArticle($article) ) {
+            return $this->frontController->forward403();
+        }
 
         if ($this->request->getRequestMethod() == 'POST') {
 
@@ -145,10 +147,16 @@ class ArticleController extends AbstractController
      * @param $article
      * @throws \Core\Exception\AccessForbiddenException
      */
-    private function forward403IfNotAllowedToEditArticle($article): void
+    private function isUserAllowedToEditArticle(Article $article): bool
     {
+        if (!$this->isUserSigned()) {
+            return false;
+        }
+
         if (!($this->user->hasCredentials('admin') || ($this->user->getId() === $article->getUser()->getId()))) {
-            $this->frontController->forward403();
+            return false;
+        } else {
+            return true;
         }
     }
 }
