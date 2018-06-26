@@ -39,7 +39,7 @@ class UserController extends AbstractController
             }
         }
         return $this->renderView(
-            'user/login.html.twig'
+            'user/login'
         );
     }
 

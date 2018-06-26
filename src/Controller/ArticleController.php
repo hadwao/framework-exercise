@@ -25,7 +25,7 @@ class ArticleController extends AbstractController
         $articles = $this->entityManager->getRepository(Article::class)->findAll();
 
         return $this->renderView(
-            'article/index.html.twig',
+            'article/index',
             [
                 'title' => 'Lista artykułów',
                 'articles' => $articles,
@@ -51,7 +51,7 @@ class ArticleController extends AbstractController
         }
 
         return $this->renderView(
-            'article/show.html.twig',
+            'article/show',
             [
                 'title' => 'Artykuł '. $article->getTitle(),
                 'article' => $article,
@@ -91,7 +91,7 @@ class ArticleController extends AbstractController
         }
 
         return $this->renderView(
-            'article/create.html.twig',
+            'article/create',
             ['article' => $article]
         );
     }
@@ -136,7 +136,7 @@ class ArticleController extends AbstractController
         }
 
         return $this->renderView(
-            'article/create.html.twig',
+            'article/create',
             ['article' => $article]
         );
     }

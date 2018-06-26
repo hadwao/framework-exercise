@@ -32,6 +32,7 @@ class TwigView implements ViewInterface
      */
     public function renderView(string $template, array $vars): string
     {
+        $template .= '.html.twig';
         $t = $this->twig->load($template);
         return $t->render($vars);
     }
