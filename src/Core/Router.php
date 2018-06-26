@@ -8,6 +8,7 @@
 
 namespace Core;
 
+use Core\Config\ConfigInterface;
 use Core\Request\HttpRequest;
 
 class Router
@@ -18,11 +19,11 @@ class Router
     private $request;
 
     /**
-     * @var AppConf
+     * @var ConfigInterface
      */
     private $config;
 
-    public function __construct(HttpRequest $request, AppConf $config)
+    public function __construct(HttpRequest $request, ConfigInterface $config)
     {
         $this->request = $request;
         $this->config = $config;

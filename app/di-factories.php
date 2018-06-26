@@ -9,9 +9,9 @@ return [
         return new \Core\Session\MessageBox($session);
     },
 
-    'Core\Request\HttpRequest' => function() { return new Core\Request\HttpRequest($_POST, $_GET, $_SERVER); },
+    'Core\Config\ConfigInterface' => function(\DI\Container $e) { return new \Core\Config\AppConf($e->get('app')); },
 
-    'Core\AppConf' => function(\DI\Container $e) { return new Core\AppConf($e->get('app')); },
+    'Core\Request\HttpRequest' => function() { return new Core\Request\HttpRequest($_POST, $_GET, $_SERVER); },
 
     'Core\User\UserInterface' => DI\factory([\Core\User\UserFactory::class, 'create']),
 

@@ -2,7 +2,7 @@
 namespace Controller;
 
 
-use Core\AppConf;
+use Core\Config\ConfigInterface;
 use Core\FrontController;
 use Core\Request\HttpRequest;
 use Core\Router;
@@ -37,7 +37,7 @@ abstract class AbstractController
     protected $router;
 
     /**
-     * @var AppConf
+     * @var ConfigInterface
      */
     protected $config;
 
@@ -150,10 +150,10 @@ abstract class AbstractController
     }
 
     /**
-     * @param AppConf $config
+     * @param ConfigInterface $config
      * @return AbstractController
      */
-    public function setConfig(AppConf $config): AbstractController
+    public function setConfig(ConfigInterface $config): AbstractController
     {
         $this->config = $config;
         return $this;

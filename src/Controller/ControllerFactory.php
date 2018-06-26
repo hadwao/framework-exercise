@@ -9,7 +9,7 @@
 namespace Controller;
 
 
-use Core\AppConf;
+use Core\Config\ConfigInterface;
 use Core\Dispatcher\ControllerNotExistsException;
 use Core\FrontController;
 use Core\Request\HttpRequest;
@@ -52,7 +52,7 @@ class ControllerFactory
         $controller = $this->container->get($controllerClass);
         $controller
             ->setFlash($this->container->get(MessageBoxInterface::class))
-            ->setConfig($this->container->get(AppConf::class))
+            ->setConfig($this->container->get(ConfigInterface::class))
             ->setEntityManager($this->container->get(EntityManager::class))
             ->setFrontController($this->container->get(FrontController::class))
             ->setRequest($this->container->get(HttpRequest::class))

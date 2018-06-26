@@ -6,10 +6,10 @@
  * Time: 15:56
  */
 
-namespace Core;
+namespace Core\Config;
 
 
-class AppConf
+class AppConf implements ConfigInterface
 {
     /**
      * @var array

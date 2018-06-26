@@ -1,6 +1,7 @@
 <?php
 namespace Core;
 
+use Core\Config\ConfigInterface;
 use Core\Dispatcher\Dispatcher;
 use Core\Dispatcher\PageNotFoundException;
 use Core\Exception\AccessForbiddenException;
@@ -16,7 +17,7 @@ class FrontController
     private $dispatcher;
 
     /**
-     * @var AppConf
+     * @var ConfigInterface
      */
     private $config;
 
@@ -34,13 +35,13 @@ class FrontController
      * FrontController constructor.
      * @param HttpRequest $request
      * @param Dispatcher $dispatcher
-     * @param AppConf $config
+     * @param ConfigInterface $config
      * @param UserInterface $user
      *
      * @Inject
      *
      */
-    public function __construct(HttpRequest $request, Dispatcher $dispatcher, AppConf $config, $user)
+    public function __construct(HttpRequest $request, Dispatcher $dispatcher, ConfigInterface $config, $user)
     {
         $this->dispatcher = $dispatcher;
         $this->config = $config;

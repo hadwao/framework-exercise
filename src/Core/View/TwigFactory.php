@@ -9,11 +9,12 @@
 namespace Core\View;
 
 
-use Core\AppConf;
+
+use Core\Config\ConfigInterface;
 
 class TwigFactory
 {
-    public function __construct(AppConf $conf)
+    public function __construct(ConfigInterface $conf)
     {
         $this->conf = $conf;
     }
