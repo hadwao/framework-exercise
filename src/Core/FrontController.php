@@ -8,6 +8,7 @@ use Core\Exception\AccessForbiddenException;
 use Core\Request\HttpRequest;
 use Core\Response\HttpResponse;
 use Core\Response\ResponseInterface;
+use Core\User\User;
 use Core\User\UserInterface;
 use DI\Annotation\Inject;
 
@@ -16,34 +17,24 @@ class FrontController
     /**
      * @var Dispatcher
      */
-    private $dispatcher;
+    protected $dispatcher;
 
     /**
      * @var ConfigInterface
      */
-    private $config;
+    protected $config;
 
     /**
      * @var UserInterface
      */
-    private $user;
+    protected $user;
 
     /**
      * @var HttpRequest
      */
-    private $request;
+    protected $request;
 
-    /**
-     * FrontController constructor.
-     * @param HttpRequest $request
-     * @param Dispatcher $dispatcher
-     * @param ConfigInterface $config
-     * @param UserInterface $user
-     *
-     * @Inject
-     *
-     */
-    public function __construct(HttpRequest $request, Dispatcher $dispatcher, ConfigInterface $config, $user)
+    public function __construct(HttpRequest $request, Dispatcher $dispatcher, ConfigInterface $config, User $user)
     {
         $this->dispatcher = $dispatcher;
         $this->config = $config;
@@ -51,9 +42,6 @@ class FrontController
         $this->request = $request;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function run()
     {
         try {
@@ -65,57 +53,53 @@ class FrontController
 
             $response->process();
 
-        } catch (AccessForbiddenException $e)
-        {
-            $this->rethrowExceptionIfDevMode($e);
+        } catch (AccessForbiddenException $e) {
+            $this->handleError($e);
         } catch (PageNotFoundException $e) {
-            $this->rethrowExceptionIfDevMode($e);
+            $this->handleError($e);
         } catch (\Exception $e) {
             http_response_code(500);
-            $this->rethrowExceptionIfDevMode($e);
+            $this->handleError($e);
         }
     }
 
-    /**
-     * @param \Exception $e
-     * @throws \Exception
-     */
-    private function rethrowExceptionIfDevMode(\Exception $e) {
-        if ($this->config->getParameter('dev_mode')) {
+    protected function handleError(\Exception $e)
+    {
+        if ($this->config->get('dev_mode')) {
             throw $e;
         }
+        throw new \Exception("Application Error");
     }
 
     public function redirect(string $uri): ResponseInterface
     {
+        #todo: new RedirectHttpResponse()
         $response = new HttpResponse();
-        return $response->setRedirectUrl($this->getBaseurl() . $uri);
+        return $response->setRedirectUrl($this->baseUrl() . $uri);
     }
 
-    /**
-     * @throws PageNotFoundException
-     */
     public function forward404()
     {
+        #todo: new Http404Response()
         $response = new HttpResponse();
         return $response->setResponseCode(404);
 
     }
 
-    /**
-     * @throws AccessForbiddenException
-     */
     public function forward403()
     {
+        #todo: new Http403Response()
         $response = new HttpResponse();
         return $response->setResponseCode(403);
     }
 
-    public function getBaseurl(): string
+    public function baseUrl(): string
     {
-        return $this->request->getServerValue('REQUEST_SCHEME')
-            .'://'.
-            $this->request->getServerValue('HTTP_HOST');
+        #TODO: move to App class
+        return sprintf("%s://%s",
+            $this->request->getServerValue('REQUEST_SCHEME'),
+            $this->request->getServerValue('HTTP_HOST')
+        );
     }
 
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Controller;
 
 
@@ -13,7 +14,6 @@ use Core\Session\SessionInterface;
 use Core\User\UserInterface;
 use Core\View\ViewInterface;
 use Doctrine\ORM\EntityManager;
-
 
 
 abstract class AbstractController
@@ -63,6 +63,28 @@ abstract class AbstractController
      */
     protected $flash;
 
+    public function __construct(
+        EntityManager $entityManager,
+        HttpRequest $request,
+        SessionInterface $session,
+        Router $router,
+        ConfigInterface $config,
+        UserInterface $user,
+        FrontController $frontController,
+        ViewInterface $view,
+        MessageBoxInterface $flash
+    ) {
+        $this->entityManager = $entityManager;
+        $this->request = $request;
+        $this->session = $session;
+        $this->router = $router;
+        $this->config = $config;
+        $this->user = $user;
+        $this->frontController = $frontController;
+        $this->view = $view;
+        $this->flash = $flash;
+    }
+
 
     /**
      * @return HttpRequest
@@ -72,14 +94,6 @@ abstract class AbstractController
         return $this->request;
     }
 
-    /**
-     * @param $template
-     * @param array $vars
-     * @return ResponseInterface
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
     public function renderView($template, $vars = []): ResponseInterface
     {
         $globalVars = [
@@ -92,126 +106,22 @@ abstract class AbstractController
     }
 
     /**
-     * @return EntityManager
-     */
-    public function getEntityManager(): EntityManager
-    {
-        return $this->entityManager;
-    }
-
-    /**
-     * @param $uri
+     * @return ResponseInterface
      */
     public function redirect(string $uri)
     {
         return $this->frontController->redirect($uri);
     }
 
-    protected function getParameter($name, $default = null)
+    public function isUserSigned(): bool
     {
-        return $this->router->getParameter($name, $default);
+        return $this->user && $this->user->hasCredentials('user');
     }
 
-    /**
-     * @param EntityManager $entityManager
-     * @return AbstractController
-     */
-    public function setEntityManager(EntityManager $entityManager): AbstractController
+    protected function requestParam($name, $default = null)
     {
-        $this->entityManager = $entityManager;
-        return $this;
+        return $this->router->parameter($name, $default);
     }
-
-    /**
-     * @param HttpRequest $request
-     * @return AbstractController
-     */
-    public function setRequest(HttpRequest $request): AbstractController
-    {
-        $this->request = $request;
-        return $this;
-    }
-
-    /**
-     * @param SessionInterface $session
-     * @return AbstractController
-     */
-    public function setSession(SessionInterface $session): AbstractController
-    {
-        $this->session = $session;
-        return $this;
-    }
-
-    /**
-     * @param Router $router
-     * @return AbstractController
-     */
-    public function setRouter(Router $router): AbstractController
-    {
-        $this->router = $router;
-        return $this;
-    }
-
-    /**
-     * @param ConfigInterface $config
-     * @return AbstractController
-     */
-    public function setConfig(ConfigInterface $config): AbstractController
-    {
-        $this->config = $config;
-        return $this;
-    }
-
-    /**
-     * @param UserInterface $user
-     * @return AbstractController
-     */
-    public function setUser(UserInterface $user): AbstractController
-    {
-        $this->user = $user;
-        return $this;
-    }
-
-    /**
-     * @param FrontController $frontController
-     * @return AbstractController
-     */
-    public function setFrontController(FrontController $frontController): AbstractController
-    {
-        $this->frontController = $frontController;
-        return $this;
-    }
-
-    /**
-     * @param ViewInterface $view
-     * @return AbstractController
-     */
-    public function setView(ViewInterface $view): AbstractController
-    {
-        $this->view = $view;
-        return $this;
-    }
-
-    /**
-     * @param MessageBoxInterface $flash
-     * @return AbstractController
-     */
-    public function setFlash(MessageBoxInterface $flash): AbstractController
-    {
-        $this->flash = $flash;
-        return $this;
-    }
-
-
-    public function isUserSigned():bool {
-        if ((!$this->user) || (!$this->user->hasCredentials('user'))) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-
 
 
 }

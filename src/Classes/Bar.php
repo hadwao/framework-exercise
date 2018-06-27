@@ -18,21 +18,21 @@ class Bar
      * @var Foo
      * @Inject
      */
-    private $foo;
+    protected $foo;
 
     /**
      * @var string
      * @Inject("db.host")
      *
      */
-    private $host;
+    protected $host;
 
     /**
      * @var array
      *
      * @Inject("request.get")
      */
-    private $getVars;
+    protected $getVars;
 
 
     /**

@@ -31,11 +31,11 @@ class UserController extends AbstractController
                 ]);
 
             if ($user) {
-                $this->session->setParameter('user_id', $user->getId());
-                $this->flash->setFlash('success', 'You have signed up');
+                $this->session->set('user_id', $user->getId());
+                $this->flash->addMessage('success', 'You have signed up');
                 return $this->redirect('/article/index');
             } else {
-                $this->flash->setFlash('error', 'Incorrect user or password');
+                $this->flash->addMessage('error', 'Incorrect user or password');
             }
         }
         return $this->renderView(
@@ -45,8 +45,8 @@ class UserController extends AbstractController
 
     public function logoutAction()
     {
-        $this->session->unsetParameter('user_id');
-        $this->flash->setFlash('success','You have been logged out');
+        $this->session->remove('user_id');
+        $this->flash->addMessage('success','You have been logged out');
         return $this->redirect('/article/index');
     }
 

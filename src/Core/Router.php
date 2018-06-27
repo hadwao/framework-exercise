@@ -16,12 +16,13 @@ class Router
     /**
      * @var HttpRequest
      */
-    private $request;
+    protected $request;
 
     /**
      * @var ConfigInterface
      */
-    private $config;
+    protected $config;
+
 
     public function __construct(HttpRequest $request, ConfigInterface $config)
     {
@@ -41,39 +42,26 @@ class Router
 
     public function getControllerName(): string
     {
+        $uriParts = $this->uriParts();
 
-        $uriParts = $this->getUriParts();
-        return $uriParts[0] ?? $this->config->getParameter('default_controller');
+        return $uriParts[0] ?? $this->config->get('default_controller');
     }
-
 
     public function getActionName(): string
     {
-        $uriParts = $this->getUriParts();
-        return $uriParts[1] ?? $this->config->getParameter('default_action');
+        $uriParts = $this->uriParts();
+
+        return $uriParts[1] ?? $this->config->get('default_action');
     }
 
-    private function stripGetParametersFromUri(string $uri): string
+    public function parameter($name, $default = null): string
     {
-        if ($strPos = strpos($uri, '?')) {
-            return substr($uri, 0, $strPos);
-        }
-        else {
-            return $uri;
-        }
+        return $this->allParameters()[$name] ?? $default;
     }
 
-    private function getUriParts(): array
+    public function allParameters(): array
     {
-        $parts = explode(
-            '/',
-            $this->stripGetParametersFromUri($this->request->getServerValue('REQUEST_URI')));
-        return array_values(array_filter($parts));
-    }
-
-    public function getParameters(): array
-    {
-        $parts = $this->getUriParts();
+        $parts = $this->uriParts();
 
         $parameters = [];
 
@@ -86,8 +74,22 @@ class Router
         return $parameters;
     }
 
-    public function getParameter($name, $default = null): string
+    protected function uriParts(): array
     {
-        return $this->getParameters()[$name] ?? $default;
+        $requestUri = $this->request->getServerValue('REQUEST_URI');
+
+        $normalizedUri = $this->stripParametersFromUri($requestUri);
+
+        $parts = explode('/', $normalizedUri);
+
+        return array_filter($parts);
+    }
+
+    protected function stripParametersFromUri(string $uri): string
+    {
+        if ($strPos = strpos($uri, '?')) {
+            return substr($uri, 0, $strPos);
+        }
+        return $uri;
     }
 }

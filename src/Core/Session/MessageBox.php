@@ -11,70 +11,51 @@ namespace Core\Session;
 
 class MessageBox implements MessageBoxInterface
 {
-    private $flashNamespace = 'flash';
-
-    private $flashesToRemove = [];
 
     /**
      * @var SessionInterface
      */
-    private $session;
+    protected $session;
 
     public function __construct(SessionInterface $session)
     {
         $this->session = $session;
     }
 
-    public function __destruct()
+    public function addMessage(string $type, $msg)
     {
-        foreach ($this->flashesToRemove as $flashName) {
-            if (isset($_SESSION[$this->flashNamespace][$flashName]))
-            {
-                unset($_SESSION[$this->flashNamespace][$flashName]);
-                die();
-            }
+        $messages = $this->readFromSession();
+
+        $messages[$msg] = $msg;
+
+        $this->writeToSession($messages);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function allMessages($purgeAfter = true): array
+    {
+        $messages = $this->readFromSession();
+
+        if ($purgeAfter) {
+            $this->session->remove(self::class);
         }
+
+        return $messages;
     }
 
-    public function setFlash(string $name, $value)
+    /**
+     * @return string[]
+     */
+    protected function readFromSession(): array
     {
-        $this->preventFlashRemove($name);
-        $this->session->setParameter($name,$value, $this->flashNamespace);
+        return $this->session->get(self::class, []);
     }
 
-    private function preventFlashRemove(string $name)
+    protected function writeToSession(array $messages)
     {
-        if (($key = array_search($name, $this->flashesToRemove)) !== false) {
-            unset($this->flashesToRemove[$key]);
-        }
-    }
-
-    public function getFlashes()
-    {
-        $flashes = $this->session->getParameter($this->flashNamespace);
-        foreach ($flashes as $key => $value) {
-            $this->setFlashToRemove($key);
-        }
-        return $flashes;
-    }
-
-    public function getFlash(string $name, $default = null)
-    {
-        $this->setFlashToRemove($name);
-        return $this->session->getParameter($name, $this->flashNamespace, $default);
-
-    }
-
-    public function hasFlash(string $name): bool
-    {
-        return $this->session->hasParameter($name, $this->flashNamespace);
-    }
-
-    private function setFlashToRemove($name)
-    {
-        if (!isset($this->flashesToRemove[$name])){
-            $this->flashesToRemove[] = $name;
-        }
+        return $this->session->set(self::class, $messages);
     }
 
 }

@@ -44,7 +44,7 @@ class ArticleController extends AbstractController
     {
         $article = $this
             ->entityManager
-            ->getRepository(Article::class)->find($this->getParameter('id'));
+            ->getRepository(Article::class)->find($this->requestParam('id'));
 
         if (!$article) {
             return $this->frontController->forward404();
@@ -87,7 +87,7 @@ class ArticleController extends AbstractController
             $this->entityManager->persist($article);
             $this->entityManager->flush();
 
-            $this->flash->setFlash('success', 'Stworzyłeś nowy artykuł');
+            $this->flash->addMessage('success', 'Stworzyłeś nowy artykuł');
 
             return $this->redirect('/article/index');
         }
@@ -112,8 +112,8 @@ class ArticleController extends AbstractController
     public function editAction()
     {
         $article = null;
-        if ($this->getParameter('id')) {
-            $article = $this->entityManager->find(Article::class, $this->getParameter('id'));
+        if ($this->requestParam('id')) {
+            $article = $this->entityManager->find(Article::class, $this->requestParam('id'));
         }
 
         if (!$article) {
@@ -132,7 +132,7 @@ class ArticleController extends AbstractController
             $this->entityManager->persist($article);
             $this->entityManager->flush();
 
-            $this->flash->setFlash('success', 'Zmiany w artykule zostały zapisane');
+            $this->flash->addMessage('success', 'Zmiany w artykule zostały zapisane');
 
             return $this->redirect('/article/index');
         }
@@ -147,7 +147,7 @@ class ArticleController extends AbstractController
      * @param $article
      * @throws \Core\Exception\AccessForbiddenException
      */
-    private function isUserAllowedToEditArticle(Article $article): bool
+    protected function isUserAllowedToEditArticle(Article $article): bool
     {
         if (!$this->isUserSigned()) {
             return false;

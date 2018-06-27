@@ -17,18 +17,18 @@ class User implements UserInterface
     /**
      * @var \Entity\User
      */
-    private $entity = null;
+    protected $entity = null;
 
-    private $id = null;
+    protected $id = null;
 
     /**
      * @var EntityManager
      */
-    private $entityManager;
+    protected $entityManager;
 
     public function __construct(EntityManager $entityManager, SessionInterface $session)
     {
-        $this->id = $session->getParameter('user_id');
+        $this->id = $session->get('user_id');
         $this->entityManager = $entityManager;
     }
 
@@ -39,7 +39,7 @@ class User implements UserInterface
      * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \Doctrine\ORM\TransactionRequiredException
      */
-    private function loadEntity(): \Entity\User
+    protected function loadEntity(): \Entity\User
     {
         if ((!$this->entity)&&($this->id)) {
             $this->entity = $this->entityManager->find(\Entity\User::class, $this->id);

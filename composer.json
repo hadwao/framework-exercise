@@ -5,6 +5,7 @@
     }
   },
   "require": {
+    "php": ">=7.1.0",
     "twig/twig": "^2.0",
     "doctrine/orm": "2.6.*",
     "php-di/php-di": "^6.0",

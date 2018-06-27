@@ -14,24 +14,20 @@ use DI\Container;
 
 class UserFactory
 {
+
+    /**
+     * @var Container
+     */
+    protected $container;
+
     public function __construct(Container $container)
     {
         $this->container = $container;
     }
 
-    /**
-     * @return UserInterface|null
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
-     */
-    public function create()
+    public function create(): User
     {
-        if ($uid = $this->container->get(SessionInterface::class)->getParameter('user_id'))
-        {
-            return $this->container->get(User::class);
-        } else {
-            return null;
-        }
+        return $this->container->get(User::class);
     }
 
 }
