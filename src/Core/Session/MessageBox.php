@@ -39,7 +39,7 @@ class MessageBox implements MessageBoxInterface
         $messages = $this->readFromSession();
 
         if ($purgeAfter) {
-            $this->session->remove(self::class);
+            $this->writeToSession([]);
         }
 
         return $messages;
