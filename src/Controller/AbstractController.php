@@ -102,7 +102,9 @@ abstract class AbstractController
             'flash' => $this->flash,
         ];
         $response = new HttpResponse();
-        return $response->setBody($this->view->renderView($template, array_merge($vars, $globalVars)));
+        $viewVars = array_merge($vars, $globalVars);
+        $output = $this->view->renderView($template, $viewVars);
+        return $response->setBody($output);
     }
 
     /**

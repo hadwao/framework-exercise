@@ -21,13 +21,13 @@ class UserController extends AbstractController
      */
     public function loginAction()
     {
-        if ($this->getRequest()->getRequestMethod() == 'POST') {
+        if ($this->getRequest()->isPost()) {
             $user = $this
                 ->entityManager
                 ->getRepository(User::class)
                 ->findOneBy([
-                    'name' => $this->getRequest()->getPostValue('login_name'),
-                    'password' => $this->getRequest()->getPostValue('login_password'),
+                    'name' => $this->getRequest()->postValue('login_name'),
+                    'password' => $this->getRequest()->postValue('login_password'),
                 ]);
 
             if ($user) {

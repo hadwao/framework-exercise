@@ -76,7 +76,7 @@ class Router
 
     protected function uriParts(): array
     {
-        $requestUri = $this->request->getServerValue('REQUEST_URI');
+        $requestUri = $this->request->serverValue('REQUEST_URI');
 
         $normalizedUri = $this->stripParametersFromUri($requestUri);
 

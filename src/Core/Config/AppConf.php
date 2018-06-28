@@ -14,16 +14,19 @@ class AppConf implements ConfigInterface
     /**
      * @var array
      */
-    protected $parameters;
+    protected $config = [];
 
-    public function __construct($parameters)
+    public function __construct(array $config)
     {
-        $this->parameters = $parameters;
+        $this->config = $config;
     }
 
+    /**
+     * @return mixed
+     */
     public function get($name, $default = null)
     {
-        return $this->parameters[$name] ?? $default;
+        return $this->config[$name] ?? $default;
     }
 
 }

@@ -36,6 +36,9 @@ class Dispatcher
         $this->controllerFactory = $controllerFactory;
     }
 
+    /**
+     * @return mixed
+     */
     public function dispatch()
     {
         $controllerClass = $this->router->getController();
@@ -47,7 +50,7 @@ class Dispatcher
             throw new ActionNotExistsException('Brak akcji:  '. $action .' w kontrolerze: '. $controllerClass);
         }
 
-        return $controller->$action();
+        return call_user_func([ $controller, $action ]);
     }
 
 }

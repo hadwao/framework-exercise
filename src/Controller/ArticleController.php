@@ -79,11 +79,11 @@ class ArticleController extends AbstractController
         $article = new Article();
         $article->setUser($this->user->getEntity());
 
-        if ($this->request->getRequestMethod() == 'POST') {
+        if ($this->request->isPost()) {
 
             $article
-                ->setBody($this->request->getPostValue('article_body'))
-                ->setTitle($this->request->getPostValue('article_title'));
+                ->setBody($this->request->postValue('article_body'))
+                ->setTitle($this->request->postValue('article_title'));
             $this->entityManager->persist($article);
             $this->entityManager->flush();
 
@@ -124,11 +124,11 @@ class ArticleController extends AbstractController
             return $this->frontController->forward403();
         }
 
-        if ($this->request->getRequestMethod() == 'POST') {
+        if ($this->request->isPost()) {
 
             $article
-                ->setBody($this->request->getPostValue('article_body'))
-                ->setTitle($this->request->getPostValue('article_title'));
+                ->setBody($this->request->postValue('article_body'))
+                ->setTitle($this->request->postValue('article_title'));
             $this->entityManager->persist($article);
             $this->entityManager->flush();
 

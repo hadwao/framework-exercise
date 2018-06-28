@@ -54,17 +54,20 @@ class FrontController
             $response->process();
 
         } catch (AccessForbiddenException $e) {
-            $this->handleError($e);
+            $this->handleError($e, 403);
         } catch (PageNotFoundException $e) {
-            $this->handleError($e);
+            $this->handleError($e, 404);
         } catch (\Exception $e) {
-            http_response_code(500);
-            $this->handleError($e);
+            $this->handleError($e, 500);
         }
     }
 
-    protected function handleError(\Exception $e)
+    protected function handleError(\Exception $e, $httpCode = 500)
     {
+        if ($httpCode) {
+            http_response_code($httpCode);
+        }
+
         if ($this->config->get('dev_mode')) {
             throw $e;
         }
@@ -97,8 +100,8 @@ class FrontController
     {
         #TODO: move to App class
         return sprintf("%s://%s",
-            $this->request->getServerValue('REQUEST_SCHEME'),
-            $this->request->getServerValue('HTTP_HOST')
+            $this->request->serverValue('REQUEST_SCHEME'),
+            $this->request->serverValue('HTTP_HOST')
         );
     }
 
