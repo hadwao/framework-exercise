@@ -10,7 +10,22 @@ namespace Core\User;
 
 interface UserRepositoryInterface
 {
+
+    /**
+     * @throws NotFoundException
+     */
     public function find($id);
 
-    public function anonymouse(): User;
+    /**
+     * @throws NotFoundException
+     */
+    public function findByName($name);
+
+    /**
+     * @throws NotFoundException
+     */
+    public function findByNameAndPassword($name, $password): User;
+
+
+    public function anonymous(): User;
 }

@@ -10,13 +10,15 @@ namespace Core\User;
 
 interface LoggedUserServiceInterface
 {
+
     public function user(): User;
 
     public function isLogged(): bool;
 
-    public function login(int $id);
+    public function login($name, $password): bool;
 
-    public function hasCredentials(string $role): bool;
+    public function hasRole(string $role): bool;
 
     public function logout();
+
 }

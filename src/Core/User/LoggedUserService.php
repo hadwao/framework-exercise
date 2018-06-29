@@ -26,7 +26,7 @@ class LoggedUserService implements LoggedUserServiceInterface
     /**
      * @var User
      */
-    protected $user;
+    protected $loggedUser;
 
     public function __construct(SessionInterface $session, UserRepositoryInterface $userRepository)
     {
@@ -36,21 +36,37 @@ class LoggedUserService implements LoggedUserServiceInterface
 
     public function user(): User
     {
-        if (!$this->user) {
-            $this->user = $this->fetchLoggedOrAnonymouse();
+        if (!$this->isLogged()) {
+            return $this->userRepository->anonymous();
         }
-        return $this->user;
+
+        if (!$this->loggedUser) {
+            $this->loggedUser = $this->userRepository->find($this->userId());
+        }
+        return $this->loggedUser;
+    }
+
+    public function userId(): int
+    {
+        return $this->session->get('user_id', '', 0);
     }
 
     public function isLogged(): bool
     {
-        return (bool) $this->session->get('user_id');
+        return (bool)$this->userId();
     }
 
-    public function login(int $id)
+    public function login($name, $password): bool
     {
-        $this->session->set('user_id', $id);
-        $this->id = $id;
+        try{
+            $user = $this->userRepository->findByNameAndPassword($name, $password);
+            if ($user) {
+                $this->session->set('user_id', $user->getId());
+            }
+            return true;
+        } catch(NotFoundException $e) {
+            return false;
+        }
     }
 
     public function logout()
@@ -58,23 +74,9 @@ class LoggedUserService implements LoggedUserServiceInterface
         $this->session->remove('user_id');
     }
 
-    public function hasCredentials(string $role): bool
+    public function hasRole(string $role): bool
     {
-        return in_array($role, $this->user()->roles);
+        return $this->user()->hasRole($role);
     }
-
-    protected function fetchLoggedOrAnonymouse(): User
-    {
-        if ($this->session->get('user_id')) {
-            $user = $this->userRepository->find($this->session->get('user_id'));
-        } else {
-            $user = $this->userRepository->anonymouse();
-        }
-
-        return $user;
-    }
-
-
-
 
 }

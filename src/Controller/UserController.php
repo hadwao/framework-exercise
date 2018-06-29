@@ -16,21 +16,14 @@ class UserController extends AbstractController
     public function loginAction()
     {
         if ($this->getRequest()->isPost()) {
-            $user = $this
-                ->entityManager
-                ->getRepository(User::class)
-                ->findOneBy([
-                    'name' => $this->getRequest()->postValue('login_name'),
-                    'password' => $this->getRequest()->postValue('login_password'),
-                ]);
+            $user = $this->getRequest()->postValue('login_name');
+            $password = $this->getRequest()->postValue('login_password');
 
-            if ($user) {
-                $this->userService->login($user->getId());
+            if ($this->userService->login($user, $password)) {
                 $this->flash->addMessage('success', 'You have signed up');
                 return $this->redirect('/article/index');
-            } else {
-                $this->flash->addMessage('error', 'Incorrect user or password');
             }
+            $this->flash->addMessage('error', 'Incorrect user or password');
         }
         return $this->renderView(
             'user/login'

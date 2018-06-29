@@ -10,7 +10,7 @@ namespace Core\User;
 
 
 use Doctrine\ORM\EntityManager;
-
+class NotFoundException extends \Exception {}
 class UserRepository implements UserRepositoryInterface
 {
 
@@ -18,6 +18,11 @@ class UserRepository implements UserRepositoryInterface
      * @var EntityManager
      */
     protected $em;
+
+    /**
+     * @var User
+     */
+    protected $anonymous;
 
     public function __construct(EntityManager $em)
     {
@@ -32,7 +37,7 @@ class UserRepository implements UserRepositoryInterface
         $entity = $this->em->find(\Entity\User::class, $id);
 
         if (!$entity) {
-            throw new \Exception('No user with given ID');
+            throw new NotFoundException('No user with given ID');
         }
 
         $user = $this->buildUserFromEntity($entity);
@@ -40,17 +45,59 @@ class UserRepository implements UserRepositoryInterface
         return $user;
     }
 
-    public function anonymouse(): User
+    public function findByName($name): User
     {
-        return new User();
+        /**
+         * @var \Entity\User $entity;
+         */
+        $entity = $this->em->getRepository(User::class)
+            ->findOneBy([
+                'name' => $name,
+            ]);
+
+        if (!$entity) {
+            throw new NotFoundException ('No user with given ID');
+        }
+
+        $user = $this->buildUserFromEntity($entity);
+
+        return $user;
+    }
+
+    public function findByNameAndPassword($name, $password): User
+    {
+        /**
+         * @var \Entity\User $entity;
+         */
+        $entity = $this->em->getRepository(User::class)
+            ->findOneBy([
+                'name' => $name,
+                'password' => $password,
+            ]);
+
+        if (!$entity) {
+            throw new NotFoundException ('No user with given name and password');
+        }
+
+        $user = $this->buildUserFromEntity($entity);
+
+        return $user;
+    }
+
+    public function anonymous(): User
+    {
+        if (!$this->anonymous) {
+            $this->anonymous = new User();
+        }
+        return $this->anonymous;
     }
 
     protected function buildUserFromEntity(\Entity\User $entity): User
     {
         $user = new User();
-        $user->id = $entity->getId();
-        $user->roles = $entity->getRoles();
-        $user->name = $entity->getName();
+        $user->setId($entity->getId());
+        $user->setRoles($entity->getRoles());
+        $user->setName($entity->getName());
         return $user;
     }
 }
