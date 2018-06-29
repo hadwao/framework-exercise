@@ -6,6 +6,9 @@ use Core\Dispatcher\Dispatcher;
 use Core\Dispatcher\PageNotFoundException;
 use Core\Exception\AccessForbiddenException;
 use Core\Request\HttpRequest;
+use Core\Response\HttpForbiddenResponse;
+use Core\Response\HttpNotFoundResponse;
+use Core\Response\HttpRedirectResponse;
 use Core\Response\HttpResponse;
 use Core\Response\ResponseInterface;
 use Core\User\UserInterface;
@@ -86,29 +89,29 @@ class FrontController
         }
     }
 
-    public function redirect(string $uri): ResponseInterface
+    public function redirect(string $uri): HttpRedirectResponse
     {
-        $response = new HttpResponse();
-        return $response->setRedirectUrl($this->getBaseurl() . $uri);
+        $response = new HttpRedirectResponse();
+        $response->setRedirectUrl($this->getBaseurl() . $uri);
+        return $response;
+
     }
 
     /**
      * @throws PageNotFoundException
      */
-    public function forward404()
+    public function forward404(): HttpNotFoundResponse
     {
-        $response = new HttpResponse();
-        return $response->setResponseCode(404);
+        return new HttpNotFoundResponse();
 
     }
 
     /**
      * @throws AccessForbiddenException
      */
-    public function forward403()
+    public function forward403(): HttpForbiddenResponse
     {
-        $response = new HttpResponse();
-        return $response->setResponseCode(403);
+        return new HttpForbiddenResponse();
     }
 
     public function getBaseurl(): string
