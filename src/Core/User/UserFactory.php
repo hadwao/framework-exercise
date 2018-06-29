@@ -25,9 +25,9 @@ class UserFactory
         $this->container = $container;
     }
 
-    public function create(): User
+    public function create(): LoggedUser
     {
-        return $this->container->get(User::class);
+        return $this->container->get(LoggedUser::class);
     }
 
 }

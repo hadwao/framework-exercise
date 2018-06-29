@@ -26,7 +26,7 @@ class MessageBox implements MessageBoxInterface
     {
         $messages = $this->readFromSession();
 
-        $messages[$msg] = $msg;
+        $messages[$type] = $msg;
 
         $this->writeToSession($messages);
     }
@@ -48,7 +48,7 @@ class MessageBox implements MessageBoxInterface
     /**
      * @return string[]
      */
-    protected function readFromSession(): array
+    protected function readFromSession(): ?array
     {
         return $this->session->get(self::class, []);
     }

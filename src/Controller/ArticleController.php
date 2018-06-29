@@ -13,13 +13,6 @@ use Entity\Article;
 
 class ArticleController extends AbstractController
 {
-
-    /**
-     * @return string
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
     public function indexAction()
     {
         $articles = $this->entityManager->getRepository(Article::class)->findAll();
@@ -33,13 +26,6 @@ class ArticleController extends AbstractController
         );
     }
 
-    /**
-     * @return string
-     * @throws \Core\Dispatcher\PageNotFoundException
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
     public function showAction()
     {
         $article = $this
@@ -61,15 +47,6 @@ class ArticleController extends AbstractController
 
     }
 
-    /**
-     * @return string
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     * @throws \Core\Exception\AccessForbiddenException
-     */
     public function createAction()
     {
         if ($this->isUserSigned()) {
@@ -98,17 +75,6 @@ class ArticleController extends AbstractController
         );
     }
 
-    /**
-     * @return string
-     * @throws \Core\Dispatcher\PageNotFoundException
-     * @throws \Core\Exception\AccessForbiddenException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
     public function editAction()
     {
         $article = null;
@@ -143,10 +109,6 @@ class ArticleController extends AbstractController
         );
     }
 
-    /**
-     * @param $article
-     * @throws \Core\Exception\AccessForbiddenException
-     */
     protected function isUserAllowedToEditArticle(Article $article): bool
     {
         if (!$this->isUserSigned()) {

@@ -13,12 +13,6 @@ use Entity\User;
 
 class UserController extends AbstractController
 {
-    /**
-     * @return string
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
     public function loginAction()
     {
         if ($this->getRequest()->isPost()) {
@@ -31,7 +25,7 @@ class UserController extends AbstractController
                 ]);
 
             if ($user) {
-                $this->session->set('user_id', $user->getId());
+                $this->userService->login($user->getId());
                 $this->flash->addMessage('success', 'You have signed up');
                 return $this->redirect('/article/index');
             } else {
@@ -45,7 +39,7 @@ class UserController extends AbstractController
 
     public function logoutAction()
     {
-        $this->session->remove('user_id');
+        $this->userService->logout();
         $this->flash->addMessage('success','You have been logged out');
         return $this->redirect('/article/index');
     }

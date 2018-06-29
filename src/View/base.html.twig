@@ -31,8 +31,8 @@
             <ul class="nav navbar-nav">
                 <li class="active"><a href="/article/index">Artykuły</a></li>
 
-                {% if user != null %}
-                    <li><a href="/user/logout">{{ user.name }}(wyloguj)</a></li>
+                {% if userService.isLogged()  %}
+                    <li><a href="/user/logout">{{ userService.user.name }}(wyloguj)</a></li>
                 {% else %}
                     <li><a href="/user/login">Login</a></li>
                 {% endif %}
@@ -43,17 +43,11 @@
 
 <div class="container">
 
-    {% if flash.hasFlash('error') %}
-        <div class="alert alert-danger">
-            {{ flash.getFlash('error') }}
-        </div>
-    {% endif %}
-
-    {% if flash.hasFlash('success') %}
-        <div class="alert alert-success">
-            {{ flash.getFlash('success') }}
-        </div>
-    {% endif %}
+    {% for key, msg in flash.allMessages  %}
+    <div class="alert alert-{{ key == 'error' ? 'danger' : 'success' }}" >
+        {{ msg }}
+    </div>
+    {% endfor %}
 
     {% block body %}
         Default body

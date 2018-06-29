@@ -82,7 +82,7 @@ class Router
 
         $parts = explode('/', $normalizedUri);
 
-        return array_filter($parts);
+        return array_values(array_filter($parts));
     }
 
     protected function stripParametersFromUri(string $uri): string

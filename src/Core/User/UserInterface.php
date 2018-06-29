@@ -12,19 +12,21 @@ interface UserInterface
 {
     public function getName(): string;
 
-    public function setName($value): User;
+    public function setName($value): LoggedUser;
 
     public function getRoles(): array;
 
-    public function setRoles(array $value): User;
+    public function setRoles(array $value): LoggedUser;
 
     public function getPassword(): string;
 
-    public function setPassword(string $value): User;
+    public function setPassword(string $value): LoggedUser;
 
     public function hasCredentials($role): bool;
 
     public function getId();
 
     public function getEntity();
+
+    public function isLogged() :bool;
 }

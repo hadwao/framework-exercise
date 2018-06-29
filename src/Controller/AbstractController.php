@@ -11,6 +11,7 @@ use Core\Response\ResponseInterface;
 use Core\Router;
 use Core\Session\MessageBoxInterface;
 use Core\Session\SessionInterface;
+use Core\User\LoggedUserServiceInterface;
 use Core\User\UserInterface;
 use Core\View\ViewInterface;
 use Doctrine\ORM\EntityManager;
@@ -44,9 +45,9 @@ abstract class AbstractController
     protected $config;
 
     /**
-     * @var UserInterface
+     * @var LoggedUserServiceInterface
      */
-    protected $user;
+    protected $userService;
 
     /**
      * @var FrontController
@@ -69,7 +70,7 @@ abstract class AbstractController
         SessionInterface $session,
         Router $router,
         ConfigInterface $config,
-        UserInterface $user,
+        LoggedUserServiceInterface $userService,
         FrontController $frontController,
         ViewInterface $view,
         MessageBoxInterface $flash
@@ -79,7 +80,7 @@ abstract class AbstractController
         $this->session = $session;
         $this->router = $router;
         $this->config = $config;
-        $this->user = $user;
+        $this->userService = $userService;
         $this->frontController = $frontController;
         $this->view = $view;
         $this->flash = $flash;
@@ -97,7 +98,7 @@ abstract class AbstractController
     public function renderView($template, $vars = []): ResponseInterface
     {
         $globalVars = [
-            'user' => $this->user,
+            'userService' => $this->userService,
             'session' => $this->session,
             'flash' => $this->flash,
         ];

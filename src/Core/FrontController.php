@@ -8,9 +8,7 @@ use Core\Exception\AccessForbiddenException;
 use Core\Request\HttpRequest;
 use Core\Response\HttpResponse;
 use Core\Response\ResponseInterface;
-use Core\User\User;
-use Core\User\UserInterface;
-use DI\Annotation\Inject;
+use Core\User\LoggedUserServiceInterface;
 
 class FrontController
 {
@@ -25,20 +23,23 @@ class FrontController
     protected $config;
 
     /**
-     * @var UserInterface
+     * @var LoggedUserServiceInterface
      */
-    protected $user;
+    protected $userService;
 
     /**
      * @var HttpRequest
      */
     protected $request;
 
-    public function __construct(HttpRequest $request, Dispatcher $dispatcher, ConfigInterface $config, User $user)
+    public function __construct(HttpRequest $request,
+        Dispatcher $dispatcher,
+        ConfigInterface $config,
+        LoggedUserServiceInterface $userService)
     {
         $this->dispatcher = $dispatcher;
         $this->config = $config;
-        $this->user = $user;
+        $this->userService = $userService;
         $this->request = $request;
     }
 
