@@ -118,7 +118,7 @@ abstract class AbstractController
 
     public function isUserSigned(): bool
     {
-        return $this->user && $this->user->hasCredentials('user');
+        return $this->userService->isLogged();
     }
 
     protected function requestParam($name, $default = null)

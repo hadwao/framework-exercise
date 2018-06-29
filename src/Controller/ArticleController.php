@@ -10,6 +10,7 @@ namespace Controller;
 
 
 use Entity\Article;
+use Entity\User;
 
 class ArticleController extends AbstractController
 {
@@ -49,12 +50,12 @@ class ArticleController extends AbstractController
 
     public function createAction()
     {
-        if ($this->isUserSigned()) {
+        if (!$this->isUserSigned()) {
             return $this->frontController->forward403();
         }
 
         $article = new Article();
-        $article->setUser($this->user->getEntity());
+        $article->setUser($this->entityManager->find(User::class, $this->userService->user()->getId()));
 
         if ($this->request->isPost()) {
 
@@ -115,10 +116,10 @@ class ArticleController extends AbstractController
             return false;
         }
 
-        if (!($this->user->hasCredentials('admin') || ($this->user->getId() === $article->getUser()->getId()))) {
-            return false;
-        } else {
+        if (($this->userService->hasRole('admin') || ($this->userService->user()->getId() === $article->getUser()->getId()))) {
             return true;
+        } else {
+            return false;
         }
     }
 }
