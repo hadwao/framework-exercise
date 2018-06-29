@@ -38,18 +38,18 @@ class HttpRequest
         $this->server = $server;
     }
 
-
-    public function getRequestMethod(): string
+    public function isPost(): bool
     {
-        return $this->server['REQUEST_METHOD'];
+        return isset($this->server['REQUEST_METHOD'])
+            && $this->server['REQUEST_METHOD'] == 'POST';
     }
 
-    public function getPostValue($name, $default = null)
+    public function postValue($name, $default = null)
     {
         return $this->post[$name] ?? $default;
     }
 
-    public function getServerValue($value, $default = null)
+    public function serverValue($value, $default = null)
     {
         return $this->server[$value] ?? $default;
     }

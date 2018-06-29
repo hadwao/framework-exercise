@@ -14,23 +14,29 @@ use Core\Config\ConfigInterface;
 
 class TwigFactory
 {
-    public function __construct(ConfigInterface $conf)
+    /**
+     * @var ConfigInterface
+     */
+    protected $config;
+
+    public function __construct(ConfigInterface $config)
     {
-        $this->conf = $conf;
+        $this->config = $config;
     }
 
-    public function create()
+    public function create(): TwigView
     {
-        $loader = new \Twig_Loader_Filesystem(APP_ROOT_DIR .'/src/View');
-        $options = [];
-        $options['debug'] = true;
+        $options = [
+            'debug' => true,
+        ];
 
-        if ($this->conf->getParameter('dev_mode') == false) {
+        if (!$this->config->get('dev_mode')) {
             $options['cache'] = APP_ROOT_DIR . '/var/cache/twig';
         }
 
+        $loader = new \Twig_Loader_Filesystem(APP_ROOT_DIR .'/src/View');
         $twig = new \Twig_Environment($loader, $options);
 
-        return new \Core\View\TwigView($twig);
+        return new TwigView($twig);
     }
 }

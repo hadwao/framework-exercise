@@ -10,11 +10,11 @@ namespace Core\Session;
 
 interface SessionInterface
 {
-    public function getParameter(string $name, $namespace = null, $default = null);
+    public function get(string $key, $namespace = null, $default = null);
 
-    public function setParameter(string $name, $value, $namespace = null);
+    public function set(string $key, $value, $namespace = null);
 
-    public function unsetParameter($name, $namespace = null);
+    public function remove($key, $namespace = null);
 
-    public function hasParameter($name, $namespace): bool;
+    public function has($key, $namespace = null): bool;
 }

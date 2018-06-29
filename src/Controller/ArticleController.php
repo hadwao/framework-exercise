@@ -13,13 +13,6 @@ use Entity\Article;
 
 class ArticleController extends AbstractController
 {
-
-    /**
-     * @return string
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
     public function indexAction()
     {
         $articles = $this->entityManager->getRepository(Article::class)->findAll();
@@ -33,18 +26,11 @@ class ArticleController extends AbstractController
         );
     }
 
-    /**
-     * @return string
-     * @throws \Core\Dispatcher\PageNotFoundException
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
     public function showAction()
     {
         $article = $this
             ->entityManager
-            ->getRepository(Article::class)->find($this->getParameter('id'));
+            ->getRepository(Article::class)->find($this->requestParam('id'));
 
         if (!$article) {
             return $this->frontController->forward404();
@@ -61,15 +47,6 @@ class ArticleController extends AbstractController
 
     }
 
-    /**
-     * @return string
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     * @throws \Core\Exception\AccessForbiddenException
-     */
     public function createAction()
     {
         if ($this->isUserSigned()) {
@@ -79,15 +56,15 @@ class ArticleController extends AbstractController
         $article = new Article();
         $article->setUser($this->user->getEntity());
 
-        if ($this->request->getRequestMethod() == 'POST') {
+        if ($this->request->isPost()) {
 
             $article
-                ->setBody($this->request->getPostValue('article_body'))
-                ->setTitle($this->request->getPostValue('article_title'));
+                ->setBody($this->request->postValue('article_body'))
+                ->setTitle($this->request->postValue('article_title'));
             $this->entityManager->persist($article);
             $this->entityManager->flush();
 
-            $this->flash->setFlash('success', 'Stworzyłeś nowy artykuł');
+            $this->flash->addMessage('success', 'Stworzyłeś nowy artykuł');
 
             return $this->redirect('/article/index');
         }
@@ -98,22 +75,11 @@ class ArticleController extends AbstractController
         );
     }
 
-    /**
-     * @return string
-     * @throws \Core\Dispatcher\PageNotFoundException
-     * @throws \Core\Exception\AccessForbiddenException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
     public function editAction()
     {
         $article = null;
-        if ($this->getParameter('id')) {
-            $article = $this->entityManager->find(Article::class, $this->getParameter('id'));
+        if ($this->requestParam('id')) {
+            $article = $this->entityManager->find(Article::class, $this->requestParam('id'));
         }
 
         if (!$article) {
@@ -124,15 +90,15 @@ class ArticleController extends AbstractController
             return $this->frontController->forward403();
         }
 
-        if ($this->request->getRequestMethod() == 'POST') {
+        if ($this->request->isPost()) {
 
             $article
-                ->setBody($this->request->getPostValue('article_body'))
-                ->setTitle($this->request->getPostValue('article_title'));
+                ->setBody($this->request->postValue('article_body'))
+                ->setTitle($this->request->postValue('article_title'));
             $this->entityManager->persist($article);
             $this->entityManager->flush();
 
-            $this->flash->setFlash('success', 'Zmiany w artykule zostały zapisane');
+            $this->flash->addMessage('success', 'Zmiany w artykule zostały zapisane');
 
             return $this->redirect('/article/index');
         }
@@ -143,11 +109,7 @@ class ArticleController extends AbstractController
         );
     }
 
-    /**
-     * @param $article
-     * @throws \Core\Exception\AccessForbiddenException
-     */
-    private function isUserAllowedToEditArticle(Article $article): bool
+    protected function isUserAllowedToEditArticle(Article $article): bool
     {
         if (!$this->isUserSigned()) {
             return false;
