@@ -39,10 +39,6 @@ class ControllerFactory
             throw new \Exception("I expected " . AbstractController::class);
         }
 
-       # if ($user = $this->container->get(UserInterface::class)) {
-            # TODO: refactor code, so controller gathers user actively instead of getting user passively
-            //$controller->setUser($user);
-       # }
         return $controller;
     }
 }

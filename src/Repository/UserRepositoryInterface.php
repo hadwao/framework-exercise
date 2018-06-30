@@ -6,7 +6,10 @@
  * Time: 18:05
  */
 
-namespace Core\User;
+namespace Repository;
+
+use Repository\NotFoundException;
+use Entity\User;
 
 interface UserRepositoryInterface
 {
@@ -26,6 +29,4 @@ interface UserRepositoryInterface
      */
     public function findByNameAndPassword($name, $password): User;
 
-
-    public function anonymous(): User;
 }

@@ -10,9 +10,6 @@ namespace Core\Response;
 
 interface ResponseInterface
 {
-    /**
-     * @return int
-     */
     public function getResponseCode(): int;
 
     public function process();

@@ -6,7 +6,7 @@
  * Time: 17:38
  */
 
-namespace Classes\Article;
+namespace Repository;
 
 
 use Doctrine\ORM\EntityManager;
@@ -24,9 +24,18 @@ class ArticleRepository implements ArticleRepositoryInterface
         $this->em = $em;
     }
 
-    public function find(int $id): ?Article
+    public function find(int $id): Article
     {
-        return $this->em->find(Article::class, $id);
+        /**
+         * @var Article $entity
+         */
+        $entity = $this->em->find(Article::class, $id);
+
+        if (!$entity) {
+            throw new NotFoundException('Article does not exists.');
+        }
+
+        return $entity;
     }
 
     /**

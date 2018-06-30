@@ -16,18 +16,11 @@ class HttpRedirectResponse extends AbstractHttpResponse
      */
     protected $redirectUrl;
 
-    /**
-     * @return null|string
-     */
     public function getRedirectUrl(): ?string
     {
         return $this->redirectUrl;
     }
 
-    /**
-     * @param null|string $redirectUrl
-     * @return HttpResponse
-     */
     public function setRedirectUrl(?string $redirectUrl): HttpRedirectResponse
     {
         $this->redirectUrl = $redirectUrl;

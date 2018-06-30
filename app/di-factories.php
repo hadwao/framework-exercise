@@ -1,7 +1,4 @@
 <?php
-use Doctrine\ORM\Tools\Setup;
-use Doctrine\ORM\EntityManager;
-
 return [
     \Core\Session\SessionInterface::class => \Di\autowire(\Core\Session\NativeSession::class),
 
@@ -14,10 +11,6 @@ return [
     \Core\View\ViewInterface::class => DI\factory([\Core\View\TwigFactory::class, 'create']),
 
     \Core\User\LoggedUserServiceInterface::class => \DI\autowire(\Core\User\LoggedUserService::class),
-
-    \Core\User\UserRepositoryInterface::class => \DI\autowire(\Core\User\UserRepository::class),
-
-    \Classes\Article\ArticleRepositoryInterface::class => \DI\autowire(\Classes\Article\ArticleRepository::class),
 
     \Doctrine\ORM\EntityManager::class => DI\factory([\Core\Db\EntityManagerFactory::class, 'create']),
 ];

@@ -8,10 +8,12 @@
 
 namespace Core\User;
 
+use Entity\User;
+
 interface LoggedUserServiceInterface
 {
 
-    public function user(): User;
+    public function user(): ?User;
 
     public function isLogged(): bool;
 

@@ -9,10 +9,9 @@
 namespace Controller;
 
 
-use Classes\Article\ArticleRepositoryInterface;
+use Repository\ArticleRepositoryInterface;
 use Core\User\LoggedUserServiceInterface;
 use Entity\Article;
-use Entity\User;
 
 class ArticleController extends AbstractController
 {
@@ -60,7 +59,7 @@ class ArticleController extends AbstractController
         }
 
         $article = new Article();
-        $article->setUser($this->entityManager->find(User::class, $this->userService->user()->getId()));
+        $article->setUser($this->userService->user());
 
         if ($this->request->isPost()) {
 
@@ -77,7 +76,9 @@ class ArticleController extends AbstractController
 
         return $this->renderView(
             'article/create',
-            ['article' => $article]
+            [
+                'title' => 'Utwórz nowy artykuł',
+                'article' => $article]
         );
     }
 
@@ -101,6 +102,7 @@ class ArticleController extends AbstractController
             $article
                 ->setBody($this->request->postValue('article_body'))
                 ->setTitle($this->request->postValue('article_title'));
+
             $articleRepository->save($article);
 
             $this->flash->addMessage('success', 'Article was successfully saved');
@@ -110,7 +112,9 @@ class ArticleController extends AbstractController
 
         return $this->renderView(
             'article/create',
-            ['article' => $article]
+            [
+                'title' => 'Edytuj artykuł',
+                'article' => $article]
         );
     }
 
@@ -120,7 +124,7 @@ class ArticleController extends AbstractController
             return false;
         }
 
-        if (($this->userService->hasRole('admin') || ($this->userService->user()->getId() === $article->getUser()->getId()))) {
+        if (($this->userService->hasRole('admin') || ($this->userService->user() === $article->getUser()))) {
             return true;
         } else {
             return false;

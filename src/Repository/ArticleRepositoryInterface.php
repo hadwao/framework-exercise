@@ -6,13 +6,16 @@
  * Time: 10:57
  */
 
-namespace Classes\Article;
+namespace Repository;
 
 use Entity\Article;
 
 interface ArticleRepositoryInterface
 {
-    public function find(int $id): ?Article;
+    /**
+     * @throws NotFoundException
+     */
+    public function find(int $id): Article;
 
     public function save(Article $article);
 

@@ -9,7 +9,6 @@ use Core\Request\HttpRequest;
 use Core\Response\HttpForbiddenResponse;
 use Core\Response\HttpNotFoundResponse;
 use Core\Response\HttpRedirectResponse;
-use Core\Response\HttpResponse;
 use Core\Response\ResponseInterface;
 use Core\User\LoggedUserServiceInterface;
 

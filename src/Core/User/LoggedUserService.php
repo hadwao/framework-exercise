@@ -10,6 +10,9 @@ namespace Core\User;
 
 
 use Core\Session\SessionInterface;
+use Entity\User;
+use Repository\NotFoundException;
+use Repository\UserRepositoryInterface;
 
 class LoggedUserService implements LoggedUserServiceInterface
 {
@@ -34,15 +37,16 @@ class LoggedUserService implements LoggedUserServiceInterface
         $this->userRepository = $userRepository;
     }
 
-    public function user(): User
+    public function user(): ?User
     {
         if (!$this->isLogged()) {
-            return $this->userRepository->anonymous();
+            return null;
         }
 
         if (!$this->loggedUser) {
             $this->loggedUser = $this->userRepository->find($this->userId());
         }
+
         return $this->loggedUser;
     }
 

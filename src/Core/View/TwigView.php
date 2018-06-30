@@ -36,9 +36,4 @@ class TwigView implements ViewInterface
         $t = $this->twig->load($template);
         return $t->render($vars);
     }
-
-    public function renderText(string $text): string
-    {
-        // TODO: Implement renderText() method.
-    }
 }

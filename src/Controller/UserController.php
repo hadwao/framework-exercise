@@ -24,6 +24,7 @@ class UserController extends AbstractController
                 $this->flash->addMessage('success', 'You have signed up');
                 return $this->redirect('/article/index');
             }
+
             $this->flash->addMessage('error', 'Incorrect user or password');
         }
         return $this->renderView(
@@ -36,18 +37,5 @@ class UserController extends AbstractController
         $this->userService->logout();
         $this->flash->addMessage('success','You have been logged out');
         return $this->redirect('/article/index');
-    }
-
-    public function createAction()
-    {
-        $user = new User();
-        $user->setName('test');
-        $user->setPassword('test');
-        $user->setRoles(['user']);
-
-        $this->entityManager->persist($user);
-        $this->entityManager->flush($user);
-
-        return 'ok';
     }
 }

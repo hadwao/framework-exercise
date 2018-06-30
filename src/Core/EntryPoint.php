@@ -18,6 +18,7 @@ class EntryPoint
         $builder = new ContainerBuilder();
         $builder->addDefinitions(APP_ROOT_DIR . '/app/parameters.php');
         $builder->addDefinitions(APP_ROOT_DIR . '/app/di-factories.php');
+        $builder->addDefinitions(APP_ROOT_DIR . '/app/di-repositories.php');
         $container = $builder->build();
 
         $frontController = $container->get(FrontController::class);
