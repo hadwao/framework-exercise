@@ -30,10 +30,11 @@ class Dispatcher
      */
     protected $controllerFactory;
 
-    public function __construct(Router $router, ControllerFactory $controllerFactory)
+    public function __construct(Router $router, ControllerFactory $controllerFactory, Container $container)
     {
         $this->router = $router;
         $this->controllerFactory = $controllerFactory;
+        $this->container = $container;
     }
 
     /**
@@ -50,7 +51,9 @@ class Dispatcher
             throw new ActionNotExistsException('Brak akcji:  '. $action .' w kontrolerze: '. $controllerClass);
         }
 
-        return call_user_func([ $controller, $action ]);
+        return $this->container->call([$controller, $action]);
+
+        //return call_user_func([ $controller, $action ]);
     }
 
 }

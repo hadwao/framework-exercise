@@ -5,6 +5,7 @@ namespace Controller;
 
 use Core\Config\ConfigInterface;
 use Core\FrontController;
+use Core\RepositoryManager;
 use Core\Request\HttpRequest;
 use Core\Response\HttpResponse;
 use Core\Response\ResponseInterface;
@@ -64,6 +65,11 @@ abstract class AbstractController
      */
     protected $flash;
 
+    /**
+     * @var RepositoryManager
+     */
+    protected $rm;
+
     public function __construct(
         EntityManager $entityManager,
         HttpRequest $request,
@@ -73,7 +79,8 @@ abstract class AbstractController
         LoggedUserServiceInterface $userService,
         FrontController $frontController,
         ViewInterface $view,
-        MessageBoxInterface $flash
+        MessageBoxInterface $flash,
+        RepositoryManager $rm
     ) {
         $this->entityManager = $entityManager;
         $this->request = $request;
@@ -84,6 +91,7 @@ abstract class AbstractController
         $this->frontController = $frontController;
         $this->view = $view;
         $this->flash = $flash;
+        $this->rm = $rm;
     }
 
 

@@ -9,14 +9,21 @@
 namespace Controller;
 
 
+use Classes\Article\ArticleRepositoryInterface;
+use Core\User\LoggedUserServiceInterface;
 use Entity\Article;
 use Entity\User;
 
 class ArticleController extends AbstractController
 {
-    public function indexAction()
+    /**
+     * @param LoggedUserServiceInterface $a
+     * @return \Core\Response\ResponseInterface
+     *
+     */
+    public function indexAction(ArticleRepositoryInterface $articleRepository)
     {
-        $articles = $this->entityManager->getRepository(Article::class)->findAll();
+        $articles = $articleRepository->findAll();
 
         return $this->renderView(
             'article/index',
@@ -27,11 +34,9 @@ class ArticleController extends AbstractController
         );
     }
 
-    public function showAction()
+    public function showAction(ArticleRepositoryInterface $articleRepository)
     {
-        $article = $this
-            ->entityManager
-            ->getRepository(Article::class)->find($this->requestParam('id'));
+        $article = $articleRepository->find($this->requestParam('id'));
 
         if (!$article) {
             return $this->frontController->forward404();
@@ -48,7 +53,7 @@ class ArticleController extends AbstractController
 
     }
 
-    public function createAction()
+    public function createAction(ArticleRepositoryInterface $articleRepository)
     {
         if (!$this->isUserSigned()) {
             return $this->frontController->forward403();
@@ -62,10 +67,10 @@ class ArticleController extends AbstractController
             $article
                 ->setBody($this->request->postValue('article_body'))
                 ->setTitle($this->request->postValue('article_title'));
-            $this->entityManager->persist($article);
-            $this->entityManager->flush();
 
-            $this->flash->addMessage('success', 'Stworzyłeś nowy artykuł');
+            $articleRepository->save($article);
+
+            $this->flash->addMessage('success', 'New article created');
 
             return $this->redirect('/article/index');
         }
@@ -76,11 +81,11 @@ class ArticleController extends AbstractController
         );
     }
 
-    public function editAction()
+    public function editAction(ArticleRepositoryInterface $articleRepository)
     {
         $article = null;
         if ($this->requestParam('id')) {
-            $article = $this->entityManager->find(Article::class, $this->requestParam('id'));
+            $article = $articleRepository->find($this->requestParam('id'));
         }
 
         if (!$article) {
@@ -96,10 +101,9 @@ class ArticleController extends AbstractController
             $article
                 ->setBody($this->request->postValue('article_body'))
                 ->setTitle($this->request->postValue('article_title'));
-            $this->entityManager->persist($article);
-            $this->entityManager->flush();
+            $articleRepository->save($article);
 
-            $this->flash->addMessage('success', 'Zmiany w artykule zostały zapisane');
+            $this->flash->addMessage('success', 'Article was successfully saved');
 
             return $this->redirect('/article/index');
         }
