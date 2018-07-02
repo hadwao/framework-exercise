@@ -9,13 +9,20 @@
 namespace Controller;
 
 
+use Repository\ArticleRepositoryInterface;
+use Core\User\LoggedUserServiceInterface;
 use Entity\Article;
 
 class ArticleController extends AbstractController
 {
-    public function indexAction()
+    /**
+     * @param LoggedUserServiceInterface $a
+     * @return \Core\Response\ResponseInterface
+     *
+     */
+    public function indexAction(ArticleRepositoryInterface $articleRepository)
     {
-        $articles = $this->entityManager->getRepository(Article::class)->findAll();
+        $articles = $articleRepository->findAll();
 
         return $this->renderView(
             'article/index',
@@ -26,14 +33,12 @@ class ArticleController extends AbstractController
         );
     }
 
-    public function showAction()
+    public function showAction(ArticleRepositoryInterface $articleRepository)
     {
-        $article = $this
-            ->entityManager
-            ->getRepository(Article::class)->find($this->requestParam('id'));
+        $article = $articleRepository->find($this->requestParam('id'));
 
         if (!$article) {
-            return $this->frontController->forward404();
+            return $this->forward404();
         }
 
         return $this->renderView(
@@ -47,47 +52,49 @@ class ArticleController extends AbstractController
 
     }
 
-    public function createAction()
+    public function createAction(ArticleRepositoryInterface $articleRepository)
     {
-        if ($this->isUserSigned()) {
-            return $this->frontController->forward403();
+        if (!$this->userService->isLogged()) {
+            return $this->forward403();
         }
 
         $article = new Article();
-        $article->setUser($this->user->getEntity());
+        $article->setUser($this->userService->user());
 
         if ($this->request->isPost()) {
 
             $article
                 ->setBody($this->request->postValue('article_body'))
                 ->setTitle($this->request->postValue('article_title'));
-            $this->entityManager->persist($article);
-            $this->entityManager->flush();
 
-            $this->flash->addMessage('success', 'Stworzyłeś nowy artykuł');
+            $articleRepository->save($article);
+
+            $this->flash->addMessage('success', 'New article created');
 
             return $this->redirect('/article/index');
         }
 
         return $this->renderView(
             'article/create',
-            ['article' => $article]
+            [
+                'title' => 'Utwórz nowy artykuł',
+                'article' => $article]
         );
     }
 
-    public function editAction()
+    public function editAction(ArticleRepositoryInterface $articleRepository)
     {
         $article = null;
         if ($this->requestParam('id')) {
-            $article = $this->entityManager->find(Article::class, $this->requestParam('id'));
+            $article = $articleRepository->find($this->requestParam('id'));
         }
 
         if (!$article) {
-            return $this->frontController->forward404();
+            return $this->forward404();
         }
 
         if (!$this->isUserAllowedToEditArticle($article) ) {
-            return $this->frontController->forward403();
+            return $this->forward403();
         }
 
         if ($this->request->isPost()) {
@@ -95,30 +102,27 @@ class ArticleController extends AbstractController
             $article
                 ->setBody($this->request->postValue('article_body'))
                 ->setTitle($this->request->postValue('article_title'));
-            $this->entityManager->persist($article);
-            $this->entityManager->flush();
 
-            $this->flash->addMessage('success', 'Zmiany w artykule zostały zapisane');
+            $articleRepository->save($article);
+
+            $this->flash->addMessage('success', 'Article was successfully saved');
 
             return $this->redirect('/article/index');
         }
 
         return $this->renderView(
             'article/create',
-            ['article' => $article]
+            [
+                'title' => 'Edytuj artykuł',
+                'article' => $article]
         );
     }
 
     protected function isUserAllowedToEditArticle(Article $article): bool
     {
-        if (!$this->isUserSigned()) {
-            return false;
-        }
+        $loggedUserIsAdmin = $this->userService->hasRole('admin');
+        $loggedUserIsAuthor = $this->userService->userId() === $article->getUserId();
 
-        if (!($this->user->hasCredentials('admin') || ($this->user->getId() === $article->getUser()->getId()))) {
-            return false;
-        } else {
-            return true;
-        }
+        return $this->userService->isLogged() && ($loggedUserIsAdmin || $loggedUserIsAuthor);
     }
 }

@@ -6,7 +6,9 @@ use Core\Dispatcher\Dispatcher;
 use Core\Dispatcher\PageNotFoundException;
 use Core\Exception\AccessForbiddenException;
 use Core\Request\HttpRequest;
-use Core\Response\HttpResponse;
+use Core\Response\HttpForbiddenResponse;
+use Core\Response\HttpNotFoundResponse;
+use Core\Response\HttpRedirectResponse;
 use Core\Response\ResponseInterface;
 use Core\User\LoggedUserServiceInterface;
 
@@ -48,10 +50,6 @@ class FrontController
         try {
             $response = $this->dispatcher->dispatch();
 
-            if (! $response instanceof ResponseInterface) {
-                throw new \Exception('Controller must return Response object');
-            }
-
             $response->process();
 
         } catch (AccessForbiddenException $e) {
@@ -73,37 +71,6 @@ class FrontController
             throw $e;
         }
         throw new \Exception("Application Error");
-    }
-
-    public function redirect(string $uri): ResponseInterface
-    {
-        #todo: new RedirectHttpResponse()
-        $response = new HttpResponse();
-        return $response->setRedirectUrl($this->baseUrl() . $uri);
-    }
-
-    public function forward404()
-    {
-        #todo: new Http404Response()
-        $response = new HttpResponse();
-        return $response->setResponseCode(404);
-
-    }
-
-    public function forward403()
-    {
-        #todo: new Http403Response()
-        $response = new HttpResponse();
-        return $response->setResponseCode(403);
-    }
-
-    public function baseUrl(): string
-    {
-        #TODO: move to App class
-        return sprintf("%s://%s",
-            $this->request->serverValue('REQUEST_SCHEME'),
-            $this->request->serverValue('HTTP_HOST')
-        );
     }
 
 }

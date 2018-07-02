@@ -12,6 +12,4 @@ namespace Core\View;
 interface ViewInterface
 {
     public function renderView(string $template, array $vars): string;
-
-    public function renderText(string $text): string ;
 }

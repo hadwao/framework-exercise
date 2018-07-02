@@ -34,7 +34,7 @@ class MessageBox implements MessageBoxInterface
     /**
      * @return string[]
      */
-    public function allMessages($purgeAfter = true): array
+    public function allMessages($purgeAfter = true): ?array
     {
         $messages = $this->readFromSession();
 

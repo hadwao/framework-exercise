@@ -2,15 +2,15 @@
 /**
  * Created by PhpStorm.
  * User: hadwao
- * Date: 28.06.18
- * Time: 17:54
+ * Date: 30.06.18
+ * Time: 12:02
  */
 
-namespace Core\User;
-
+namespace Repository;
 
 use Doctrine\ORM\EntityManager;
-class NotFoundException extends \Exception {}
+use Entity\User;
+
 class UserRepository implements UserRepositoryInterface
 {
 
@@ -18,11 +18,6 @@ class UserRepository implements UserRepositoryInterface
      * @var EntityManager
      */
     protected $em;
-
-    /**
-     * @var User
-     */
-    protected $anonymous;
 
     public function __construct(EntityManager $em)
     {
@@ -32,7 +27,7 @@ class UserRepository implements UserRepositoryInterface
     public function find($id = null): User
     {
         /**
-         * @var \Entity\User $entity;
+         * @var \Entity\User $entity ;
          */
         $entity = $this->em->find(\Entity\User::class, $id);
 
@@ -40,15 +35,14 @@ class UserRepository implements UserRepositoryInterface
             throw new NotFoundException('No user with given ID');
         }
 
-        $user = $this->buildUserFromEntity($entity);
 
-        return $user;
+        return $entity;
     }
 
     public function findByName($name): User
     {
         /**
-         * @var \Entity\User $entity;
+         * @var \Entity\User $entity ;
          */
         $entity = $this->em->getRepository(User::class)
             ->findOneBy([
@@ -59,45 +53,27 @@ class UserRepository implements UserRepositoryInterface
             throw new NotFoundException ('No user with given ID');
         }
 
-        $user = $this->buildUserFromEntity($entity);
 
-        return $user;
+        return $entity;
     }
 
     public function findByNameAndPassword($name, $password): User
     {
         /**
-         * @var \Entity\User $entity;
+         * @var \Entity\User $entity ;
          */
-        $entity = $this->em->getRepository(User::class)
+        $entity = $this->em->getRepository(\Entity\User::class)
             ->findOneBy([
                 'name' => $name,
                 'password' => $password,
             ]);
 
+
         if (!$entity) {
             throw new NotFoundException ('No user with given name and password');
         }
 
-        $user = $this->buildUserFromEntity($entity);
 
-        return $user;
-    }
-
-    public function anonymous(): User
-    {
-        if (!$this->anonymous) {
-            $this->anonymous = new User();
-        }
-        return $this->anonymous;
-    }
-
-    protected function buildUserFromEntity(\Entity\User $entity): User
-    {
-        $user = new User();
-        $user->setId($entity->getId());
-        $user->setRoles($entity->getRoles());
-        $user->setName($entity->getName());
-        return $user;
+        return $entity;
     }
 }

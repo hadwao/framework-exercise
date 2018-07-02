@@ -17,11 +17,10 @@ class EntryPoint
     {
         $builder = new ContainerBuilder();
         $builder->addDefinitions(APP_ROOT_DIR . '/app/parameters.php');
-        $builder->addDefinitions(APP_ROOT_DIR . '/app/di-factories.php');
+        $builder->addDefinitions(APP_ROOT_DIR . '/app/di.php');
         $container = $builder->build();
 
-        $frontController = $container->get(FrontController::class);
-        $frontController->run();
+        $container->get(FrontController::class)->run();
     }
 
 }
