@@ -121,4 +121,9 @@ class Article
         return $this;
     }
 
+    public function getUserId(): int
+    {
+        return $this->user ? $this->user->getId() : 0;
+    }
+
 }

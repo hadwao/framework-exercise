@@ -38,7 +38,7 @@ class ArticleController extends AbstractController
         $article = $articleRepository->find($this->requestParam('id'));
 
         if (!$article) {
-            return $this->frontController->forward404();
+            return $this->forward404();
         }
 
         return $this->renderView(
@@ -54,8 +54,8 @@ class ArticleController extends AbstractController
 
     public function createAction(ArticleRepositoryInterface $articleRepository)
     {
-        if (!$this->isUserSigned()) {
-            return $this->frontController->forward403();
+        if (!$this->userService->isLogged()) {
+            return $this->forward403();
         }
 
         $article = new Article();
@@ -90,11 +90,11 @@ class ArticleController extends AbstractController
         }
 
         if (!$article) {
-            return $this->frontController->forward404();
+            return $this->forward404();
         }
 
         if (!$this->isUserAllowedToEditArticle($article) ) {
-            return $this->frontController->forward403();
+            return $this->forward403();
         }
 
         if ($this->request->isPost()) {
@@ -120,14 +120,9 @@ class ArticleController extends AbstractController
 
     protected function isUserAllowedToEditArticle(Article $article): bool
     {
-        if (!$this->isUserSigned()) {
-            return false;
-        }
+        $loggedUserIsAdmin = $this->userService->hasRole('admin');
+        $loggedUserIsAuthor = $this->userService->userId() === $article->getUserId();
 
-        if (($this->userService->hasRole('admin') || ($this->userService->user() === $article->getUser()))) {
-            return true;
-        } else {
-            return false;
-        }
+        return $this->userService->isLogged() && ($loggedUserIsAdmin || $loggedUserIsAuthor);
     }
 }

@@ -4,9 +4,13 @@ namespace Controller;
 
 
 use Core\Config\ConfigInterface;
+use Core\Dispatcher\PageNotFoundException;
+use Core\Exception\AccessForbiddenException;
 use Core\FrontController;
-use Core\RepositoryManager;
 use Core\Request\HttpRequest;
+use Core\Response\HttpForbiddenResponse;
+use Core\Response\HttpNotFoundResponse;
+use Core\Response\HttpRedirectResponse;
 use Core\Response\HttpResponse;
 use Core\Response\ResponseInterface;
 use Core\Router;
@@ -65,11 +69,6 @@ abstract class AbstractController
      */
     protected $flash;
 
-    /**
-     * @var RepositoryManager
-     */
-    protected $rm;
-
     public function __construct(
         EntityManager $entityManager,
         HttpRequest $request,
@@ -79,8 +78,7 @@ abstract class AbstractController
         LoggedUserServiceInterface $userService,
         FrontController $frontController,
         ViewInterface $view,
-        MessageBoxInterface $flash,
-        RepositoryManager $rm
+        MessageBoxInterface $flash
     ) {
         $this->entityManager = $entityManager;
         $this->request = $request;
@@ -91,47 +89,48 @@ abstract class AbstractController
         $this->frontController = $frontController;
         $this->view = $view;
         $this->flash = $flash;
-        $this->rm = $rm;
     }
 
-
-    /**
-     * @return HttpRequest
-     */
-    public function getRequest(): HttpRequest
-    {
-        return $this->request;
-    }
-
-    public function renderView($template, $vars = []): ResponseInterface
+    protected function renderView($template, $vars = []): ResponseInterface
     {
         $globalVars = [
             'userService' => $this->userService,
             'session' => $this->session,
             'flash' => $this->flash,
         ];
-        $response = new HttpResponse();
-        $viewVars = array_merge($vars, $globalVars);
-        $output = $this->view->renderView($template, $viewVars);
-        return $response->setBody($output);
-    }
+        $finalVars = array_merge($vars, $globalVars);
+        $output = $this->view->renderView($template, $finalVars);
 
-    /**
-     * @return ResponseInterface
-     */
-    public function redirect(string $uri)
-    {
-        return $this->frontController->redirect($uri);
-    }
-
-    public function isUserSigned(): bool
-    {
-        return $this->userService->isLogged();
+        return new HttpResponse($output);
     }
 
     protected function requestParam($name, $default = null)
     {
         return $this->router->parameter($name, $default);
+    }
+
+    public function redirect(string $uri): HttpRedirectResponse
+    {
+        return new HttpRedirectResponse($this->baseUrl() . $uri);
+    }
+
+    public function forward404(): HttpNotFoundResponse
+    {
+        return new HttpNotFoundResponse();
+    }
+
+    public function forward403(): HttpForbiddenResponse
+    {
+        return new HttpForbiddenResponse();
+    }
+
+    public function baseUrl(): string
+    {
+        #TODO: move to App class
+        return sprintf("%s://%s",
+            $this->request->serverValue('REQUEST_SCHEME'),
+            $this->request->serverValue('HTTP_HOST')
+        );
     }
 
 

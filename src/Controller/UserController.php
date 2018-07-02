@@ -15,9 +15,9 @@ class UserController extends AbstractController
 {
     public function loginAction()
     {
-        if ($this->getRequest()->isPost()) {
-            $user = $this->getRequest()->postValue('login_name');
-            $password = $this->getRequest()->postValue('login_password');
+        if ($this->request->isPost()) {
+            $user = $this->request->postValue('login_name');
+            $password = $this->request->postValue('login_password');
 
 
             if ($this->userService->login($user, $password)) {

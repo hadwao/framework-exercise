@@ -11,13 +11,4 @@ namespace Core\Response;
 
 abstract class AbstractHttpResponse implements ResponseInterface
 {
-    /**
-     * @var int
-     */
-    protected $responseCode = 200;
-
-    public function getResponseCode(): int
-    {
-        return $this->responseCode;
-    }
 }

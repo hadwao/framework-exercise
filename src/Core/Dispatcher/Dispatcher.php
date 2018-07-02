@@ -10,6 +10,7 @@ namespace Core\Dispatcher;
 
 
 use Controller\ControllerFactory;
+use Core\Response\ResponseInterface;
 use Core\Router;
 use DI\Container;
 
@@ -37,10 +38,7 @@ class Dispatcher
         $this->container = $container;
     }
 
-    /**
-     * @return mixed
-     */
-    public function dispatch()
+    public function dispatch(): ResponseInterface
     {
         $controllerClass = $this->router->getController();
         $action = $this->router->getAction();
@@ -51,9 +49,13 @@ class Dispatcher
             throw new ActionNotExistsException('Brak akcji:  '. $action .' w kontrolerze: '. $controllerClass);
         }
 
-        return $this->container->call([$controller, $action]);
+        $response = $this->container->call([$controller, $action]);
 
-        //return call_user_func([ $controller, $action ]);
+        if (! $response instanceof ResponseInterface) {
+            throw new \Exception('Controller must return Response object');
+        }
+
+        return $response;
     }
 
 }

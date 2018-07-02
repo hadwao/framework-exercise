@@ -15,50 +15,29 @@ use Core\Exception\AccessForbiddenException;
 class HttpResponse extends AbstractHttpResponse
 {
 
+    /**
+     * @var string
+     */
+    protected $body = '';
 
     /**
-     * @var string|null
+     * @var string[]
      */
-    protected $body = null;
+    protected $headers = [];
 
-    /**
-     * @var string|null
-     */
-    protected $redirectUrl = null;
-
-
-    public function __construct()
-    {
-        $this->responseCode = 200;
-    }
-
-    public function getResponseCode(): int
-    {
-        return $this->responseCode;
-    }
-    public function setResponseCode(int $responseCode): HttpResponse
-    {
-        $this->responseCode = $responseCode;
-        return $this;
-    }
-
-    public function getBody(): ?string
-    {
-        return $this->body;
-    }
-
-    public function setBody(?string $body): HttpResponse
+    public function __construct(string $body, array $headers = [])
     {
         $this->body = $body;
-        return $this;
+        $this->headers = $headers;
     }
 
     public function process()
     {
-        http_response_code($this->responseCode);
+        http_response_code(200);
+        foreach($this->headers as $name => $value) {
+            header("{$name}:{$value}");
+        }
         echo $this->body;
     }
-
-
 
 }

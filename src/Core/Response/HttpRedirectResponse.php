@@ -16,25 +16,19 @@ class HttpRedirectResponse extends AbstractHttpResponse
      */
     protected $redirectUrl;
 
-    public function getRedirectUrl(): ?string
+    public function __construct(string $redirectUrl)
+    {
+        $this->redirectUrl = $redirectUrl ?? '/';
+    }
+
+    public function getRedirectUrl(): string
     {
         return $this->redirectUrl;
     }
 
-    public function setRedirectUrl(?string $redirectUrl): HttpRedirectResponse
-    {
-        $this->redirectUrl = $redirectUrl;
-        return $this;
-    }
-
     public function process()
     {
-        if (!$this->getRedirectUrl())
-        {
-            throw new \Exception('You must specify redirect url');
-        }
         header("Location: " . $this->redirectUrl);
     }
-
 
 }

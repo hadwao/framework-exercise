@@ -15,6 +15,8 @@ interface LoggedUserServiceInterface
 
     public function user(): ?User;
 
+    public function userId(): int;
+
     public function isLogged(): bool;
 
     public function login($name, $password): bool;

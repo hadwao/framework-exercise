@@ -10,7 +10,5 @@ namespace Core\Response;
 
 interface ResponseInterface
 {
-    public function getResponseCode(): int;
-
     public function process();
 }

@@ -80,7 +80,7 @@ class LoggedUserService implements LoggedUserServiceInterface
 
     public function hasRole(string $role): bool
     {
-        return $this->user()->hasRole($role);
+        return $this->isLogged() && $this->user()->hasRole($role);
     }
 
 }

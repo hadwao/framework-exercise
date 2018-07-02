@@ -50,10 +50,6 @@ class FrontController
         try {
             $response = $this->dispatcher->dispatch();
 
-            if (! $response instanceof ResponseInterface) {
-                throw new \Exception('Controller must return Response object');
-            }
-
             $response->process();
 
         } catch (AccessForbiddenException $e) {
@@ -75,41 +71,6 @@ class FrontController
             throw $e;
         }
         throw new \Exception("Application Error");
-    }
-
-    public function redirect(string $uri): HttpRedirectResponse
-    {
-        $response = new HttpRedirectResponse();
-        $response->setRedirectUrl($this->baseUrl() . $uri);
-        return $response;
-
-    }
-
-    /**
-     * @throws PageNotFoundException
-     */
-    public function forward404(): HttpNotFoundResponse
-    {
-        return new HttpNotFoundResponse();
-
-    }
-
-    /**
-     * @throws AccessForbiddenException
-     */
-    public function forward403(): HttpForbiddenResponse
-    {
-        return new HttpForbiddenResponse();
-    }
-
-
-    public function baseUrl(): string
-    {
-        #TODO: move to App class
-        return sprintf("%s://%s",
-            $this->request->serverValue('REQUEST_SCHEME'),
-            $this->request->serverValue('HTTP_HOST')
-        );
     }
 
 }
