@@ -10,5 +10,8 @@ namespace Core\Config;
 
 interface ConfigInterface
 {
-    public function getParameter($name, $default = null);
+    /**
+     * @return mixed
+     */
+    public function get($name, $default = null);
 }

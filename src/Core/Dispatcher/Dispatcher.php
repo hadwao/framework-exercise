@@ -18,38 +18,42 @@ class Dispatcher
     /**
      * @var Dispatcher
      */
-    private $router;
+    protected $router;
 
     /**
      * @var Container
      */
-    private $container;
+    protected $container;
 
-    public function __construct(Router $router, ControllerFactory $controllerFactory)
+    /**
+     * @var ControllerFactory
+     */
+    protected $controllerFactory;
+
+    public function __construct(Router $router, ControllerFactory $controllerFactory, Container $container)
     {
         $this->router = $router;
         $this->controllerFactory = $controllerFactory;
+        $this->container = $container;
     }
 
     /**
      * @return mixed
-     * @throws ControllerNotExistsException
-     * @throws \DI\DependencyException
-     * @throws \DI\NotFoundException
-     * @throws ActionNotExistsException
      */
     public function dispatch()
     {
         $controllerClass = $this->router->getController();
         $action = $this->router->getAction();
 
-        $controller = $this->controllerFactory->createController($controllerClass);
+        $controller = $this->controllerFactory->create($controllerClass);
 
         if (!method_exists($controller, $action)) {
             throw new ActionNotExistsException('Brak akcji:  '. $action .' w kontrolerze: '. $controllerClass);
         }
 
-        return $controller->$action();
+        return $this->container->call([$controller, $action]);
+
+        //return call_user_func([ $controller, $action ]);
     }
 
 }

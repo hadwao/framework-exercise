@@ -14,7 +14,7 @@ class TwigView implements ViewInterface
     /**
      * @var \Twig_Environment
      */
-    private $twig;
+    protected $twig;
 
 
     public function __construct(\Twig_Environment $twig)
@@ -35,10 +35,5 @@ class TwigView implements ViewInterface
         $template .= '.html.twig';
         $t = $this->twig->load($template);
         return $t->render($vars);
-    }
-
-    public function renderText(string $text): string
-    {
-        // TODO: Implement renderText() method.
     }
 }

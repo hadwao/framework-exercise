@@ -9,20 +9,20 @@
 namespace Controller;
 
 
+use Repository\ArticleRepositoryInterface;
+use Core\User\LoggedUserServiceInterface;
 use Entity\Article;
 
 class ArticleController extends AbstractController
 {
-
     /**
-     * @return string
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
+     * @param LoggedUserServiceInterface $a
+     * @return \Core\Response\ResponseInterface
+     *
      */
-    public function indexAction()
+    public function indexAction(ArticleRepositoryInterface $articleRepository)
     {
-        $articles = $this->entityManager->getRepository(Article::class)->findAll();
+        $articles = $articleRepository->findAll();
 
         return $this->renderView(
             'article/index',
@@ -33,18 +33,9 @@ class ArticleController extends AbstractController
         );
     }
 
-    /**
-     * @return string
-     * @throws \Core\Dispatcher\PageNotFoundException
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
-    public function showAction()
+    public function showAction(ArticleRepositoryInterface $articleRepository)
     {
-        $article = $this
-            ->entityManager
-            ->getRepository(Article::class)->find($this->getParameter('id'));
+        $article = $articleRepository->find($this->requestParam('id'));
 
         if (!$article) {
             return $this->frontController->forward404();
@@ -61,59 +52,41 @@ class ArticleController extends AbstractController
 
     }
 
-    /**
-     * @return string
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     * @throws \Core\Exception\AccessForbiddenException
-     */
-    public function createAction()
+    public function createAction(ArticleRepositoryInterface $articleRepository)
     {
-        if ($this->isUserSigned()) {
+        if (!$this->isUserSigned()) {
             return $this->frontController->forward403();
         }
 
         $article = new Article();
-        $article->setUser($this->user->getEntity());
+        $article->setUser($this->userService->user());
 
-        if ($this->request->getRequestMethod() == 'POST') {
+        if ($this->request->isPost()) {
 
             $article
-                ->setBody($this->request->getPostValue('article_body'))
-                ->setTitle($this->request->getPostValue('article_title'));
-            $this->entityManager->persist($article);
-            $this->entityManager->flush();
+                ->setBody($this->request->postValue('article_body'))
+                ->setTitle($this->request->postValue('article_title'));
 
-            $this->flash->setFlash('success', 'Stworzyłeś nowy artykuł');
+            $articleRepository->save($article);
+
+            $this->flash->addMessage('success', 'New article created');
 
             return $this->redirect('/article/index');
         }
 
         return $this->renderView(
             'article/create',
-            ['article' => $article]
+            [
+                'title' => 'Utwórz nowy artykuł',
+                'article' => $article]
         );
     }
 
-    /**
-     * @return string
-     * @throws \Core\Dispatcher\PageNotFoundException
-     * @throws \Core\Exception\AccessForbiddenException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     * @throws \Doctrine\ORM\TransactionRequiredException
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
-    public function editAction()
+    public function editAction(ArticleRepositoryInterface $articleRepository)
     {
         $article = null;
-        if ($this->getParameter('id')) {
-            $article = $this->entityManager->find(Article::class, $this->getParameter('id'));
+        if ($this->requestParam('id')) {
+            $article = $articleRepository->find($this->requestParam('id'));
         }
 
         if (!$article) {
@@ -124,39 +97,37 @@ class ArticleController extends AbstractController
             return $this->frontController->forward403();
         }
 
-        if ($this->request->getRequestMethod() == 'POST') {
+        if ($this->request->isPost()) {
 
             $article
-                ->setBody($this->request->getPostValue('article_body'))
-                ->setTitle($this->request->getPostValue('article_title'));
-            $this->entityManager->persist($article);
-            $this->entityManager->flush();
+                ->setBody($this->request->postValue('article_body'))
+                ->setTitle($this->request->postValue('article_title'));
 
-            $this->flash->setFlash('success', 'Zmiany w artykule zostały zapisane');
+            $articleRepository->save($article);
+
+            $this->flash->addMessage('success', 'Article was successfully saved');
 
             return $this->redirect('/article/index');
         }
 
         return $this->renderView(
             'article/create',
-            ['article' => $article]
+            [
+                'title' => 'Edytuj artykuł',
+                'article' => $article]
         );
     }
 
-    /**
-     * @param $article
-     * @throws \Core\Exception\AccessForbiddenException
-     */
-    private function isUserAllowedToEditArticle(Article $article): bool
+    protected function isUserAllowedToEditArticle(Article $article): bool
     {
         if (!$this->isUserSigned()) {
             return false;
         }
 
-        if (!($this->user->hasCredentials('admin') || ($this->user->getId() === $article->getUser()->getId()))) {
-            return false;
-        } else {
+        if (($this->userService->hasRole('admin') || ($this->userService->user() === $article->getUser()))) {
             return true;
+        } else {
+            return false;
         }
     }
 }

@@ -10,11 +10,7 @@ namespace Core\Session;
 
 interface MessageBoxInterface
 {
-    public function setFlash(string $name, $value);
+    public function addMessage(string $type, $msg);
 
-    public function getFlashes();
-
-    public function getFlash(string $name, $default = null);
-
-    public function hasFlash(string $name): bool;
+    public function allMessages();
 }

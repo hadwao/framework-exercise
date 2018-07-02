@@ -11,60 +11,62 @@ namespace Core\Session;
 
 class NativeSession implements SessionInterface
 {
-    private $isStarded = false;
+    /**
+     * @var bool
+     */
+    protected $isInitialized = false;
 
-    private function startSession()
+    public function get(string $key, $namespace = null, $default = null)
     {
-        if (($this->isStarded == false) && (session_status() != PHP_SESSION_ACTIVE)) {
-            session_start();
-            $this->isStarded = true;
-        }
-    }
+        $this->ensureInitialized();
 
-    public function getParameter(string $name, $namespace = null, $default = null)
-    {
-        $this->startSession();
         if ($namespace) {
-            return $_SESSION[$namespace][$name] ?? $default;
+            return $_SESSION[$namespace][$key] ?? $default;
         } else {
-            return $_SESSION[$name] ?? $default;
+            return $_SESSION[$key] ?? $default;
         }
     }
 
-    public function setParameter(string $name, $value, $namespace = null)
+    public function set(string $key, $value, $namespace = null)
     {
-        $this->startSession();
+        $this->ensureInitialized();
+
         if ($namespace){
-            $_SESSION[$namespace][$name] = $value;
+            $_SESSION[$namespace][$key] = $value;
+            return;
         }
-        else {
-            $_SESSION[$name] = $value;
-        }
+
+        $_SESSION[$key] = $value;
     }
 
-    public function hasParameter($name, $namespace):bool
+    public function has($key, $namespace = null):bool
     {
-        $this->startSession();
+        $this->ensureInitialized();
+
         if ($namespace) {
-            return isset($_SESSION[$namespace][$name]);
-        } else {
-            return isset($_SESSION[$name]);
+            return isset($_SESSION[$namespace][$key]);
         }
+        return isset($_SESSION[$key]);
     }
 
-
-    public function unsetParameter($name, $namespace = null)
+    public function remove($key, $namespace = null)
     {
-        $this->startSession();
+        $this->ensureInitialized();
+
         if ($namespace) {
-            if (isset($_SESSION[$namespace][$name])) {
-                unset($_SESSION[$namespace][$name]);
-            }
+            unset($_SESSION[$namespace][$key]);
+            return;
         }
-        else {
-            if (isset($_SESSION[$name])) {
-                unset($_SESSION[$name]);
-            }
+
+        unset($_SESSION[$key]);
+    }
+
+    protected function ensureInitialized()
+    {
+        if ($this->isInitialized || session_status() == PHP_SESSION_ACTIVE) {
+            return;
         }
+
+        session_start();
     }
 }

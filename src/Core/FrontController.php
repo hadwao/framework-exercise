@@ -6,54 +6,45 @@ use Core\Dispatcher\Dispatcher;
 use Core\Dispatcher\PageNotFoundException;
 use Core\Exception\AccessForbiddenException;
 use Core\Request\HttpRequest;
-use Core\Response\HttpResponse;
+use Core\Response\HttpForbiddenResponse;
+use Core\Response\HttpNotFoundResponse;
+use Core\Response\HttpRedirectResponse;
 use Core\Response\ResponseInterface;
-use Core\User\UserInterface;
-use DI\Annotation\Inject;
+use Core\User\LoggedUserServiceInterface;
 
 class FrontController
 {
     /**
      * @var Dispatcher
      */
-    private $dispatcher;
+    protected $dispatcher;
 
     /**
      * @var ConfigInterface
      */
-    private $config;
+    protected $config;
 
     /**
-     * @var UserInterface
+     * @var LoggedUserServiceInterface
      */
-    private $user;
+    protected $userService;
 
     /**
      * @var HttpRequest
      */
-    private $request;
+    protected $request;
 
-    /**
-     * FrontController constructor.
-     * @param HttpRequest $request
-     * @param Dispatcher $dispatcher
-     * @param ConfigInterface $config
-     * @param UserInterface $user
-     *
-     * @Inject
-     *
-     */
-    public function __construct(HttpRequest $request, Dispatcher $dispatcher, ConfigInterface $config, $user)
+    public function __construct(HttpRequest $request,
+        Dispatcher $dispatcher,
+        ConfigInterface $config,
+        LoggedUserServiceInterface $userService)
     {
         $this->dispatcher = $dispatcher;
         $this->config = $config;
-        $this->user = $user;
+        $this->userService = $userService;
         $this->request = $request;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function run()
     {
         try {
@@ -65,57 +56,60 @@ class FrontController
 
             $response->process();
 
-        } catch (AccessForbiddenException $e)
-        {
-            $this->rethrowExceptionIfDevMode($e);
+        } catch (AccessForbiddenException $e) {
+            $this->handleError($e, 403);
         } catch (PageNotFoundException $e) {
-            $this->rethrowExceptionIfDevMode($e);
+            $this->handleError($e, 404);
         } catch (\Exception $e) {
-            http_response_code(500);
-            $this->rethrowExceptionIfDevMode($e);
+            $this->handleError($e, 500);
         }
     }
 
-    /**
-     * @param \Exception $e
-     * @throws \Exception
-     */
-    private function rethrowExceptionIfDevMode(\Exception $e) {
-        if ($this->config->getParameter('dev_mode')) {
+    protected function handleError(\Exception $e, $httpCode = 500)
+    {
+        if ($httpCode) {
+            http_response_code($httpCode);
+        }
+
+        if ($this->config->get('dev_mode')) {
             throw $e;
         }
+        throw new \Exception("Application Error");
     }
 
-    public function redirect(string $uri): ResponseInterface
+    public function redirect(string $uri): HttpRedirectResponse
     {
-        $response = new HttpResponse();
-        return $response->setRedirectUrl($this->getBaseurl() . $uri);
+        $response = new HttpRedirectResponse();
+        $response->setRedirectUrl($this->baseUrl() . $uri);
+        return $response;
+
     }
 
     /**
      * @throws PageNotFoundException
      */
-    public function forward404()
+    public function forward404(): HttpNotFoundResponse
     {
-        $response = new HttpResponse();
-        return $response->setResponseCode(404);
+        return new HttpNotFoundResponse();
 
     }
 
     /**
      * @throws AccessForbiddenException
      */
-    public function forward403()
+    public function forward403(): HttpForbiddenResponse
     {
-        $response = new HttpResponse();
-        return $response->setResponseCode(403);
+        return new HttpForbiddenResponse();
     }
 
-    public function getBaseurl(): string
+
+    public function baseUrl(): string
     {
-        return $this->request->getServerValue('REQUEST_SCHEME')
-            .'://'.
-            $this->request->getServerValue('HTTP_HOST');
+        #TODO: move to App class
+        return sprintf("%s://%s",
+            $this->request->serverValue('REQUEST_SCHEME'),
+            $this->request->serverValue('HTTP_HOST')
+        );
     }
 
 }

@@ -117,7 +117,7 @@ class User
         return $this;
     }
 
-    public function hasCredentials($role): bool
+    public function hasRole($role): bool
     {
         return in_array($role, $this->roles);
     }
